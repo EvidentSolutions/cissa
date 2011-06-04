@@ -6,10 +6,13 @@ import fi.evident.cissa.model.Dimension;
 import fi.evident.cissa.model.DimensionUnit;
 import fi.evident.cissa.template.BinaryOperator;
 import fi.evident.cissa.template.ValueExpression;
+import org.codehaus.jparsec.OperatorTable;
 import org.codehaus.jparsec.Parser;
 import org.codehaus.jparsec.Scanners;
+import org.codehaus.jparsec.functors.Binary;
 import org.codehaus.jparsec.functors.Map;
 import org.codehaus.jparsec.functors.Pair;
+import org.codehaus.jparsec.functors.Unary;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +24,6 @@ import static org.codehaus.jparsec.Scanners.*;
 import static org.codehaus.jparsec.pattern.Patterns.regex;
 
 final class ExpressionParser {
-
-    private static final Parser<BinaryOperator> multiply = op(BinaryOperator.MULTIPLY);
-    private static final Parser<BinaryOperator> divide = op(BinaryOperator.DIVIDE);
-    private static final Parser<BinaryOperator> plus = op(BinaryOperator.ADD);
-    private static final Parser<BinaryOperator> minus = op(BinaryOperator.SUBTRACT);
 
     public static Parser<ValueExpression> value() {
         return tuple(exp(), sequence(comma, exp()).many()).map(new Map<Pair<ValueExpression, List<ValueExpression>>, ValueExpression>() {
@@ -42,37 +40,41 @@ final class ExpressionParser {
     }
 
     private static Parser<ValueExpression> exp() {
-        Parser.Reference<ValueExpression> exp = Parser.newReference();
-        Parser.Reference<ValueExpression> unaryNeg = Parser.newReference();
+        Parser.Reference<ValueExpression> ref = Parser.newReference();
 
-        Parser<ValueExpression> factor =
-            or(variableValue(), literalExpression(), unaryNeg.lazy(), inParens(exp.lazy()));
+        Parser<ValueExpression> unit =
+                or(variableValue(), literalExpression(), inParens(ref.lazy()));
 
-        unaryNeg.set(sequence(minus, factor).map(new Map<ValueExpression, ValueExpression>() {
-            public ValueExpression map(ValueExpression exp) {
-                return ValueExpression.binary(ValueExpression.ZERO, BinaryOperator.SUBTRACT, exp);
+        Parser<ValueExpression> parser =
+                new OperatorTable<ValueExpression>()
+                .infixl(operator(BinaryOperator.ADD), 10)
+                .infixl(operator(BinaryOperator.SUBTRACT), 10)
+                .infixl(operator(BinaryOperator.MULTIPLY), 20)
+                .infixl(operator(BinaryOperator.DIVIDE), 20)
+                .prefix(unaryNeg(), 30)
+                .build(unit);
+        ref.set(parser);
+        return parser;
+    }
+
+    private static Parser<Unary<ValueExpression>> unaryNeg() {
+        Unary<ValueExpression> unaryNegExp =
+                new Unary<ValueExpression>() {
+                    public ValueExpression map(ValueExpression exp) {
+                        return ValueExpression.binary(ValueExpression.ZERO, BinaryOperator.SUBTRACT, exp);
+                    }
+                };
+
+        return token("-").retn(unaryNegExp);
+    }
+
+    private static Parser<Binary<ValueExpression>> operator(final BinaryOperator operator) {
+        Binary<ValueExpression> foo = new Binary<ValueExpression>() {
+            public ValueExpression map(ValueExpression left, ValueExpression right) {
+                return ValueExpression.binary(left, operator, right);
             }
-        }));
-
-        Parser<ValueExpression> term =
-            tuple(factor, tuple(multiply.or(divide), factor).many()).map(new Map<Pair<ValueExpression, List<Pair<BinaryOperator, ValueExpression>>>, ValueExpression>() {
-                public ValueExpression map(Pair<ValueExpression, List<Pair<BinaryOperator, ValueExpression>>> p) {
-                    ValueExpression l = p.a;
-                    for (Pair<BinaryOperator,ValueExpression> pp : p.b)
-                        l = ValueExpression.binary(l, pp.a, pp.b);
-                    return l;
-                }
-            });
-
-        exp.set(tuple(term, tuple(plus.or(minus), term).many()).map(new Map<Pair<ValueExpression, List<Pair<BinaryOperator, ValueExpression>>>, ValueExpression>() {
-            public ValueExpression map(Pair<ValueExpression, List<Pair<BinaryOperator, ValueExpression>>> p) {
-                ValueExpression l = p.a;
-                for (Pair<BinaryOperator,ValueExpression> pp : p.b)
-                    l = ValueExpression.binary(l, pp.a, pp.b);
-                return l;
-            }
-        }));
-        return exp.get();
+        };
+        return token(operator.getSymbol()).retn(foo);
     }
 
     private static Parser<ValueExpression> variableValue() {
@@ -162,9 +164,5 @@ final class ExpressionParser {
                 return CSSValue.token(s);
             }
         });
-    }
-
-    private static Parser<BinaryOperator> op(BinaryOperator op) {
-        return token(op.getSymbol()).retn(op);
     }
 }
