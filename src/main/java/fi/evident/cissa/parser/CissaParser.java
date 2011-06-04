@@ -55,10 +55,9 @@ public class CissaParser {
     // ruleSet:
     //      selectors { variableDefinitions attributes ruleSet* }
     private static Parser<RuleSetTemplate> ruleSet() {
-        Parser<List<Selector>> selectors = selectors().followedBy(optSpaces).followedBy(openingBrace).followedBy(optSpaces).label("selectors");
-        Parser<List<AttributeTemplate>> attributes = attributes().followedBy(optSpaces).followedBy(closingBrace).label("attributes");
+        Parser<List<AttributeTemplate>> attributes = inBraces(attributes());
 
-        return tuple(selectors, attributes).map(new Map<Pair<List<Selector>, List<AttributeTemplate>>, RuleSetTemplate>() {
+        return tuple(selectors(), attributes).map(new Map<Pair<List<Selector>, List<AttributeTemplate>>, RuleSetTemplate>() {
             public RuleSetTemplate map(Pair<List<Selector>, List<AttributeTemplate>> pair) {
                 return new RuleSetTemplate(pair.a, pair.b);
             }
@@ -66,7 +65,7 @@ public class CissaParser {
     }
 
     private static Parser<List<AttributeTemplate>> attributes() {
-        return attribute().sepBy(semicolon);
+        return attribute().sepBy(semicolon).followedBy(optSpaces);
     }
 
     private static Parser<AttributeTemplate> attribute() {
@@ -132,7 +131,7 @@ public class CissaParser {
     //      selector
     //    | selector, selectors
     private static Parser<List<Selector>> selectors() {
-        return commaSep(selector());
+        return commaSep(selector()).followedBy(optSpaces);
     }
 
     private static Parser<Selector> selector() {

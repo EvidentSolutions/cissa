@@ -10,13 +10,6 @@ public final class Document {
 
     private final List<RuleSet> ruleSets = new ArrayList<RuleSet>();
 
-    public Document() {
-    }
-
-    public Document(List<RuleSet> ruleSets) {
-        this.ruleSets.addAll(ruleSets);
-    }
-
     public void addRuleSet(RuleSet ruleSet) {
         Require.argumentNotNull("ruleSet", ruleSet);
 
