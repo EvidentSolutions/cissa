@@ -6,7 +6,6 @@ import fi.evident.cissa.model.DimensionUnit;
 import fi.evident.cissa.model.Selector;
 import fi.evident.cissa.template.*;
 import org.codehaus.jparsec.Parser;
-import org.codehaus.jparsec.Parsers;
 import org.codehaus.jparsec.Scanners;
 import org.codehaus.jparsec.functors.Map;
 import org.codehaus.jparsec.functors.Pair;
@@ -33,6 +32,8 @@ public class CissaParser {
     private static final Parser<?> closingBrace = token('}');
     private static final Parser<?> openingParen = token('(');
     private static final Parser<?> closingParen = token(')');
+    private static final Parser<?> openingBracket = token('[');
+    private static final Parser<?> closingBracket = token(']');
 
     private static final Parser<BinaryOperator> multiply = token('*').retn(BinaryOperator.MULTIPLY);
     private static final Parser<BinaryOperator> divide = token('/').retn(BinaryOperator.DIVIDE);
@@ -246,7 +247,27 @@ public class CissaParser {
     }
 
     private static Parser<String> attrib() {
-        return Parsers.fail("attrib not supported");
+        Parser<String> attributeValue = token(identifier); // TODO: or string
+
+        Parser<String> op = or(token("="), token("~="), token("!="));
+
+        Parser<String> rest = pair(op, attributeValue.optional("")).map(new Map<Pair<String, String>, String>() {
+            public String map(Pair<String, String> p) {
+                return p.a + p.b;
+            }
+        });
+
+        Parser<String> contents = pair(token(identifier), rest.optional("")).map(new Map<Pair<String, String>, String>() {
+            public String map(Pair<String, String> p) {
+                return p.a + p.b;
+            }
+        });
+
+        return inBrackets(contents).map(new Map<String, String>() {
+            public String map(String s) {
+                return "[" + s + "]";
+            }
+        });
     }
 
     private static <T> Parser<T> inBraces(Parser<T> p) {
@@ -257,12 +278,20 @@ public class CissaParser {
         return between(openingParen, p, closingParen);
     }
 
+    private static <T> Parser<T> inBrackets(Parser<T> p) {
+        return between(openingBracket, p, closingBracket);
+    }
+
     private static <T> Parser<T> token(Parser<T> p) {
         return p.followedBy(optSpaces);
     }
 
     private static Parser<?> token(char c) {
         return token(isChar(c));
+    }
+
+    private static Parser<String> token(String s) {
+        return token(Scanners.string(s).source());
     }
 
     private static <T> Parser<List<T>> commaSep(Parser<T> p) {

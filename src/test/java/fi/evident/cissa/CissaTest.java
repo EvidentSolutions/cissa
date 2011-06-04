@@ -126,7 +126,6 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void supportAttributesInSelectors() {
         assertThatMarkupGeneratesIdenticalCSS("h1[id] { width: 10pt }");
         assertThatMarkupGeneratesIdenticalCSS("h1[id=foo] { width: 10pt }");
@@ -144,7 +143,6 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void supportMultipleSpecificationsInSelectors() {
         assertThatMarkupGeneratesIdenticalCSS("a.foo.bar#baz:active[class=quux] { width: 10pt }");
     }
