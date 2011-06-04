@@ -10,15 +10,13 @@ import org.codehaus.jparsec.Parsers;
 import org.codehaus.jparsec.Scanners;
 import org.codehaus.jparsec.functors.Map;
 import org.codehaus.jparsec.functors.Pair;
-import org.codehaus.jparsec.functors.Tuple3;
 import org.codehaus.jparsec.pattern.Pattern;
 import org.codehaus.jparsec.pattern.Patterns;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.codehaus.jparsec.Parsers.sequence;
-import static org.codehaus.jparsec.Parsers.tuple;
+import static org.codehaus.jparsec.Parsers.*;
 import static org.codehaus.jparsec.Scanners.pattern;
 import static org.codehaus.jparsec.pattern.Patterns.string;
 
@@ -31,6 +29,8 @@ public class CissaParser {
     private static final Parser<?> semicolon = token(Scanners.isChar(';'));
     private static final Parser<?> openingBrace = token(Scanners.isChar('{'));
     private static final Parser<?> closingBrace = token(Scanners.isChar('}'));
+    private static final Parser<?> openingParen = token(Scanners.isChar('('));
+    private static final Parser<?> closingParen = token(Scanners.isChar(')'));
     private static final Parser<String> identifier =
         Scanners.pattern(Patterns.regex("-?[a-zA-Z][-a-zA-Z0-9_]*"), "identifier").source();
 
@@ -80,7 +80,7 @@ public class CissaParser {
     }
 
     private static Parser<AttributeTemplate> attribute() {
-        return tuple(identifier.followedBy(colon), attributeValues()).map(new Map<Pair<String, List<ValueExpression>>, AttributeTemplate>() {
+        return tuple(token(identifier).followedBy(colon), attributeValues()).map(new Map<Pair<String, List<ValueExpression>>, AttributeTemplate>() {
             public AttributeTemplate map(Pair<String, List<ValueExpression>> pair) {
                 return new AttributeTemplate(pair.a, pair.b, false);
             }
@@ -106,11 +106,53 @@ public class CissaParser {
     }
 
     private static Parser<ValueExpression> exp() {
-        return factor();
+        Parser.Reference<ValueExpression> exp = Parser.newReference();
+        Parser.Reference<ValueExpression> unaryNeg = Parser.newReference();
+
+        Parser<ValueExpression> factor =
+            Parsers.or(variableValue(), literalExpression(), unaryNeg.lazy(), inParens(exp.lazy()));
+
+        unaryNeg.set(sequence(minus(), factor).map(new Map<ValueExpression, ValueExpression>() {
+            public ValueExpression map(ValueExpression exp) {
+                return ValueExpression.binary(ValueExpression.ZERO, BinaryOperator.SUBTRACT, exp);
+            }
+        }));
+
+        Parser<ValueExpression> term =
+            tuple(factor, tuple(multiply().or(divide()), factor).many()).map(new Map<Pair<ValueExpression, List<Pair<BinaryOperator, ValueExpression>>>, ValueExpression>() {
+                public ValueExpression map(Pair<ValueExpression, List<Pair<BinaryOperator, ValueExpression>>> p) {
+                    ValueExpression l = p.a;
+                    for (Pair<BinaryOperator,ValueExpression> pp : p.b)
+                        l = ValueExpression.binary(l, pp.a, pp.b);
+                    return l;
+                }
+            });
+
+        exp.set(tuple(term, tuple(plus().or(minus()), term).many()).map(new Map<Pair<ValueExpression, List<Pair<BinaryOperator, ValueExpression>>>, ValueExpression>() {
+            public ValueExpression map(Pair<ValueExpression, List<Pair<BinaryOperator, ValueExpression>>> p) {
+                ValueExpression l = p.a;
+                for (Pair<BinaryOperator,ValueExpression> pp : p.b)
+                    l = ValueExpression.binary(l, pp.a, pp.b);
+                return l;
+            }
+        }));
+        return exp.get();
     }
 
-    private static Parser<ValueExpression> factor() {
-        return variableValue().or(literalExpression());
+    private static Parser<BinaryOperator> multiply() {
+        return token(Scanners.isChar('*')).retn(BinaryOperator.MULTIPLY);
+    }
+
+    private static Parser<BinaryOperator> divide() {
+        return token(Scanners.isChar('/')).retn(BinaryOperator.DIVIDE);
+    }
+
+    private static Parser<BinaryOperator> plus() {
+        return token(Scanners.isChar('+')).retn(BinaryOperator.ADD);
+    }
+
+    private static Parser<BinaryOperator> minus() {
+        return token(Scanners.isChar('-')).retn(BinaryOperator.SUBTRACT);
     }
 
     private static Parser<ValueExpression> variableValue() {
@@ -139,7 +181,7 @@ public class CissaParser {
     }
 
     private static Parser<Dimension> dimension() {
-        return tuple(Scanners.DECIMAL, dimensionUnit()).map(new Map<Pair<String, DimensionUnit>, Dimension>() {
+        return token(tuple(Scanners.DECIMAL, dimensionUnit())).map(new Map<Pair<String, DimensionUnit>, Dimension>() {
             public Dimension map(Pair<String, DimensionUnit> p) {
                 return Dimension.dimension(p.a, p.b);
             }
@@ -182,11 +224,11 @@ public class CissaParser {
     }
 
     private static <T> Parser<T> inBraces(Parser<T> p) {
-        return Parsers.tuple(openingBrace, p, closingBrace).map(new Map<Tuple3<Object, T, Object>, T>() {
-            public T map(Tuple3<Object, T, Object> p) {
-                return p.b;
-            }
-        });
+        return between(openingBrace, p, closingBrace);
+    }
+
+    private static <T> Parser<T> inParens(Parser<T> p) {
+        return between(openingParen, p, closingParen);
     }
 
     private static <T> Parser<T> token(Parser<T> p) {

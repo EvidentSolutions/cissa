@@ -20,21 +20,6 @@ public abstract class CSSValue {
     }
 }
 
-final class CSSAmount extends CSSValue {
-    private final Dimension value;
-
-    CSSAmount(Dimension value) {
-        Require.argumentNotNull("value", value);
-
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return value.toString();
-    }
-}
-
 final class CSSToken extends CSSValue {
     private final String token;
 

@@ -179,8 +179,11 @@
     <dictionary name="komu">
       <words>
         <w>cissa</w>
+        <w>exps</w>
         <w>lookups</w>
         <w>multi</w>
+        <w>paren</w>
+        <w>parens</w>
       </words>
     </dictionary>
   </component>

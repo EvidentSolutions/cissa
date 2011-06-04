@@ -1,11 +1,13 @@
 package fi.evident.cissa;
 
+import org.codehaus.jparsec.error.ParserException;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class CissaTest {
 
@@ -37,16 +39,14 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void supportAddingDimensions() {
-        assertThatMarkup("h1 { width: 10   + 20   }", generatesCSS("h1 { width: 30 }"));
+        assertThatMarkup("h1 { width: 10   + 20 }", generatesCSS("h1 { width: 30 }"));
         assertThatMarkup("h1 { width: 10pt + 20   }", generatesCSS("h1 { width: 30pt }"));
         assertThatMarkup("h1 { width: 10   + 20pt }", generatesCSS("h1 { width: 30pt }"));
         assertThatMarkup("h1 { width: 10pt + 20pt }", generatesCSS("h1 { width: 30pt }"));
     }
 
     @Test
-    @Ignore
     public void supportMultiplication() {
         assertThatMarkup("h1 { width: 6   * 8   }", generatesCSS("h1 { width: 48 }"));
         assertThatMarkup("h1 { width: 6pt * 8   }", generatesCSS("h1 { width: 48pt }"));
@@ -54,7 +54,6 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void precedenceForArithmeticOperations() {
         assertThatMarkup("h1 { width: (2+3) * 4 }", generatesCSS("h1 { width: 20 }"));
         assertThatMarkup("h1 { width: 2+3*4 }"    , generatesCSS("h1 { width: 14 }"));
@@ -66,7 +65,6 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void extraWhitespaceIsAllowed() {
         assertThatMarkup(" h1 { width : ( 2 + 3 ) * 4 } ", generatesCSS("h1 { width: 20 }"));
     }
@@ -77,7 +75,6 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void outerVariableIsInScopeForInitializationOfLocalVariable() {
         assertThatMarkup("@foo: 12px; h1 { @foo: @foo+2; width: @foo }", generatesCSS("h1 { width: 14px }"));
     }
@@ -240,8 +237,12 @@ public class CissaTest {
     // comments are ignored inside string literals
 
     private static void assertThatMarkup(String markup, Matcher<String> matcher) {
-        String css = Cissa.generate(markup);
-        assertThat(css, matcher);
+        try {
+            String css = Cissa.generate(markup);
+            assertThat(css, matcher);
+        } catch (ParserException e) {
+            fail("Failed to parse markup '" + markup + "'\n  error: " + e);
+        }
     }
 
     private static Matcher<String> generatesCSS(final String expected) {

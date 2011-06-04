@@ -1,11 +1,15 @@
 package fi.evident.cissa.template;
 
 import fi.evident.cissa.model.CSSValue;
+import fi.evident.cissa.model.Dimension;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ValueExpression {
+
+    public static final ValueExpression ZERO = literal(CSSValue.amount(Dimension.ZERO));
+
     public abstract CSSValue evaluate(Environment env);
 
     public static ValueExpression variable(final String name) {

@@ -9,6 +9,8 @@ public final class Dimension {
     private final BigDecimal value;
     private final DimensionUnit unit;
 
+    public static final Dimension ZERO = new Dimension(BigDecimal.ZERO, DimensionUnit.EMPTY);
+
     private Dimension(BigDecimal value, DimensionUnit unit) {
         Require.argumentNotNull("value", value);
         Require.argumentNotNull("unit", unit);
