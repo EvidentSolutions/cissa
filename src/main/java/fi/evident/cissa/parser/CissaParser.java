@@ -14,6 +14,7 @@ import org.codehaus.jparsec.functors.Tuple3;
 import org.codehaus.jparsec.pattern.Pattern;
 import org.codehaus.jparsec.pattern.Patterns;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.codehaus.jparsec.Parsers.sequence;
@@ -91,6 +92,20 @@ public class CissaParser {
     }
 
     private static Parser<ValueExpression> value() {
+        return tuple(exp(), sequence(comma, exp()).many()).map(new Map<Pair<ValueExpression, List<ValueExpression>>, ValueExpression>() {
+            public ValueExpression map(Pair<ValueExpression, List<ValueExpression>> pair) {
+                if (pair.b.isEmpty())
+                    return pair.a;
+
+                List<ValueExpression> exps = new ArrayList<ValueExpression>(1 + pair.b.size());
+                exps.add(pair.a);
+                exps.addAll(pair.b);
+                return ValueExpression.list(exps);
+            }
+        });
+    }
+
+    private static Parser<ValueExpression> exp() {
         return factor();
     }
 

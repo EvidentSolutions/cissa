@@ -99,6 +99,11 @@ public class CissaTest {
     }
 
     @Test
+    public void supportMultipleValues() {
+        assertThatMarkupGeneratesIdenticalCSS("h1 { margin: 1 2 3 4 }");
+    }
+
+    @Test
     @Ignore
     public void supportCompoundSelectors() {
         assertThatMarkupGeneratesIdenticalCSS("h1 h2 { width: 10pt }");
@@ -217,7 +222,6 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void listOfValuesAreSupported() {
         assertThatMarkupGeneratesIdenticalCSS("h1 { font-family: Arial, sans-serif }");
     }

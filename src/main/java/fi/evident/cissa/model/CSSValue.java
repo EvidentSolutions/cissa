@@ -39,7 +39,7 @@ final class CSSToken extends CSSValue {
     private final String token;
 
     CSSToken(String token) {
-        Require.argumentNotNull("token", token);
+        Require.argumentNotNullOrEmpty("token", token);
 
         this.token = token;
     }
@@ -55,7 +55,7 @@ final class CSSList extends CSSValue {
     private final List<CSSValue> values;
 
     CSSList(List<CSSValue> values) {
-        Require.argumentNotNull("values", values);
+        Require.argumentNotNullOrEmpty("values", values);
 
         this.values = values;
     }
