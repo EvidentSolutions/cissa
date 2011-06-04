@@ -26,9 +26,8 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void supportVariables() {
-        assertThatMarkup("h1 { @myColor: blue; color: @myColor; }", generatesCSS("h1 { color: blue }"));
+        assertThatMarkup("h1 { @myColor: blue; color: @myColor; }", generatesCSS("h1 { color: blue }"));
         assertThatMarkup("h1 { @x: 2pt; @y: @x; font-size: @y; }", generatesCSS("h1 { font-size: 2pt }"));
     }
 

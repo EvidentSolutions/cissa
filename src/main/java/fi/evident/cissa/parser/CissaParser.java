@@ -4,10 +4,7 @@ import fi.evident.cissa.model.CSSValue;
 import fi.evident.cissa.model.Dimension;
 import fi.evident.cissa.model.DimensionUnit;
 import fi.evident.cissa.model.Selector;
-import fi.evident.cissa.template.AttributeTemplate;
-import fi.evident.cissa.template.DocumentTemplate;
-import fi.evident.cissa.template.RuleSetTemplate;
-import fi.evident.cissa.template.ValueExpression;
+import fi.evident.cissa.template.*;
 import org.codehaus.jparsec.Parser;
 import org.codehaus.jparsec.Parsers;
 import org.codehaus.jparsec.Scanners;
@@ -55,17 +52,29 @@ public class CissaParser {
     // ruleSet:
     //      selectors { variableDefinitions attributes ruleSet* }
     private static Parser<RuleSetTemplate> ruleSet() {
-        Parser<List<AttributeTemplate>> attributes = inBraces(attributes());
+        Parser<Pair<List<VariableDefinition>, List<AttributeTemplate>>> attributes = inBraces(tuple(variableDefinition().many(), attributes()));
 
-        return tuple(selectors(), attributes).map(new Map<Pair<List<Selector>, List<AttributeTemplate>>, RuleSetTemplate>() {
-            public RuleSetTemplate map(Pair<List<Selector>, List<AttributeTemplate>> pair) {
-                return new RuleSetTemplate(pair.a, pair.b);
+        return tuple(selectors(), attributes).map(new Map<Pair<List<Selector>, Pair<List<VariableDefinition>, List<AttributeTemplate>>>, RuleSetTemplate>() {
+            public RuleSetTemplate map(Pair<List<Selector>, Pair<List<VariableDefinition>, List<AttributeTemplate>>> pair) {
+                return new RuleSetTemplate(pair.a, pair.b.a, pair.b.b);
             }
-        }).label("rule-set");
+        });
+    }
+
+    private static Parser<VariableDefinition> variableDefinition() {
+        return tuple(variable().followedBy(colon), value().followedBy(semicolon)).map(new Map<Pair<String, ValueExpression>, VariableDefinition>() {
+            public VariableDefinition map(Pair<String, ValueExpression> p) {
+                return new VariableDefinition(p.a, p.b);
+            }
+        });
+    }
+
+    private static Parser<String> variable() {
+        return token(sequence(Scanners.isChar('@'), identifier)).label("variable");
     }
 
     private static Parser<List<AttributeTemplate>> attributes() {
-        return attribute().sepBy(semicolon).followedBy(optSpaces);
+        return attribute().sepBy(semicolon).followedBy(optSpaces).followedBy(semicolon.optional());
     }
 
     private static Parser<AttributeTemplate> attribute() {
@@ -77,11 +86,23 @@ public class CissaParser {
     }
 
     private static Parser<List<ValueExpression>> attributeValues() {
-        return attributeValue().sepBy(optSpaces);
+        return value().sepBy(optSpaces);
     }
 
-    private static Parser<ValueExpression> attributeValue() {
-        return literalExpression();
+    private static Parser<ValueExpression> value() {
+        return factor();
+    }
+
+    private static Parser<ValueExpression> factor() {
+        return variableValue().or(literalExpression());
+    }
+
+    private static Parser<ValueExpression> variableValue() {
+        return variable().map(new Map<String, ValueExpression>() {
+            public ValueExpression map(String s) {
+                return ValueExpression.variable(s);
+            }
+        });
     }
 
     private static Parser<ValueExpression> literalExpression() {
