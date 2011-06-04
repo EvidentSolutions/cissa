@@ -176,7 +176,6 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void supportColors() {
         assertThatMarkup("h1 { color: #9fa2a4 }", generatesCSS("h1 { color: #9fa2a4 }"));
         assertThatMarkup("h1 { color: #9FA2A4 }", generatesCSS("h1 { color: #9fa2a4 }"));
@@ -184,6 +183,11 @@ public class CissaTest {
 
         assertThatMarkup("h1 { color: #abc }", generatesCSS("h1 { color: #aabbcc }"));
         //assertThatMarkup("h1 { color: rgb(0, 0, 0) }", generatesCSS("h1 { color: #000000 }"));
+    }
+
+    @Test
+    public void supportAddingColors() {
+        assertThatMarkup("h1 { color: #112233 + #111100 }", generatesCSS("h1 { color: #223333 }"));
     }
 
     @Test
@@ -196,12 +200,6 @@ public class CissaTest {
     public void supportNestedRuleSets() {
         assertThatMarkup("h1 { h2 { color: red } }", generatesCSS("h1 h2 { color: red }"));
         assertThatMarkup("h1, h2 { h3 { color: red } }", generatesCSS("h1 h3, h2 h3 { color: red }"));
-    }
-
-    @Test
-    @Ignore
-    public void supportAddingColors() {
-        assertThatMarkup("h1 { color: #112233 + #111100 }", generatesCSS("h1 { color: #223333 }"));
     }
 
     @Test

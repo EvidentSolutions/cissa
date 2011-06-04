@@ -1,11 +1,9 @@
 package fi.evident.cissa.parser;
 
-import fi.evident.cissa.model.CSSValue;
-import fi.evident.cissa.model.Dimension;
-import fi.evident.cissa.model.DimensionUnit;
-import fi.evident.cissa.model.Selector;
+import fi.evident.cissa.model.*;
 import fi.evident.cissa.template.*;
 import org.codehaus.jparsec.Parser;
+import org.codehaus.jparsec.Parsers;
 import org.codehaus.jparsec.Scanners;
 import org.codehaus.jparsec.functors.Map;
 import org.codehaus.jparsec.functors.Pair;
@@ -161,7 +159,8 @@ public class CissaParser {
     }
 
     private static Parser<ValueExpression> literalExpression() {
-        Parser<CSSValue> literal = tokenValue().or(numericValue());
+        Parser<CSSValue> literal = or(numberLiteral(), colorLiteral(), stringLiteral(), builtinFunctionLiteral(), identifierLiteral());
+
         return literal.map(new Map<CSSValue, ValueExpression>() {
             public ValueExpression map(CSSValue value) {
                 return ValueExpression.literal(value);
@@ -169,7 +168,28 @@ public class CissaParser {
         });
     }
 
-    private static Parser<CSSValue> numericValue() {
+    private static Parser<CSSValue> colorLiteral() {
+        Parser<CSSValue> hashColor =
+            pattern(regex("#([0-9a-zA-Z]{6}|[0-9a-zA-Z]{3})"), "hash-color").source().map(new Map<String, CSSValue>() {
+                public CSSValue map(String s) {
+                    return CSSColor.parse(s);
+                }
+            });
+
+        Parser<CSSValue> rgbColor = Parsers.fail("TODO"); // rgb(1,2,3)
+
+        return token(or(hashColor, rgbColor));
+    }
+
+    private static Parser<CSSValue> stringLiteral() {
+        return Parsers.fail("not implemented");
+    }
+
+    private static Parser<CSSValue> builtinFunctionLiteral() {
+        return Parsers.fail("not implemented");
+    }
+
+    private static Parser<CSSValue> numberLiteral() {
         return dimension().map(new Map<Dimension, CSSValue>() {
             public CSSValue map(Dimension value) {
                 return CSSValue.amount(value);
@@ -195,7 +215,7 @@ public class CissaParser {
         });
     }
 
-    private static Parser<CSSValue> tokenValue() {
+    private static Parser<CSSValue> identifierLiteral() {
         return identifier.map(new Map<String, CSSValue>() {
             public CSSValue map(String s) {
                 return CSSValue.token(s);
