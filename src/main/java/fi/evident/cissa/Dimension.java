@@ -1,5 +1,7 @@
 package fi.evident.cissa;
 
+import fi.evident.cissa.utils.Require;
+
 import java.math.BigDecimal;
 
 public final class Dimension {
@@ -8,9 +10,9 @@ public final class Dimension {
     private final DimensionUnit unit;
 
     private Dimension(BigDecimal value, DimensionUnit unit) {
-        if (value == null) throw new IllegalArgumentException("null value");
-        if (unit == null) throw new IllegalArgumentException("null unit");
-        
+        Require.argumentNotNull("value", value);
+        Require.argumentNotNull("unit", unit);
+
         this.value = value;
         this.unit = unit;
     }

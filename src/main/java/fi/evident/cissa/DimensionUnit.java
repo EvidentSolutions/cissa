@@ -1,5 +1,7 @@
 package fi.evident.cissa;
 
+import fi.evident.cissa.utils.Require;
+
 public final class DimensionUnit {
 
     public static final DimensionUnit EMPTY = new DimensionUnit("");
@@ -18,7 +20,7 @@ public final class DimensionUnit {
     }
 
     private DimensionUnit mergeAdditive(String op, DimensionUnit unit) {
-        if (unit == null) throw new IllegalArgumentException("rhs is null");
+        Require.argumentNotNull("unit", unit);
 
         if (this == EMPTY || this.equals(unit)) return unit;
         if (unit == EMPTY) return this;
@@ -27,7 +29,7 @@ public final class DimensionUnit {
     }
 
     public DimensionUnit multiply(DimensionUnit unit) {
-        if (unit == null) throw new IllegalArgumentException("rhs is null");
+        Require.argumentNotNull("unit", unit);
 
         if (this == EMPTY) return unit;
         if (unit == EMPTY) return this;
@@ -36,7 +38,7 @@ public final class DimensionUnit {
     }
 
     public DimensionUnit divide(DimensionUnit unit) {
-        if (unit == null) throw new IllegalArgumentException("rhs is null");
+        Require.argumentNotNull("unit", unit);
 
         if (unit == EMPTY) return this;
         if (unit.equals(this)) return EMPTY;
@@ -45,8 +47,8 @@ public final class DimensionUnit {
     }
 
     public static DimensionUnit forName(String name) {
-        if (name == null || name.isEmpty()) throw new IllegalArgumentException("invalid name: " + name);
-        
+        Require.argumentNotNullOrEmpty("name", name);
+
         return new DimensionUnit(name);
     }
 
