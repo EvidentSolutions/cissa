@@ -3,7 +3,6 @@ package fi.evident.cissa.parser;
 import fi.evident.cissa.model.*;
 import fi.evident.cissa.template.*;
 import org.codehaus.jparsec.Parser;
-import org.codehaus.jparsec.Parsers;
 import org.codehaus.jparsec.Scanners;
 import org.codehaus.jparsec.functors.Map;
 import org.codehaus.jparsec.functors.Pair;
@@ -15,8 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.codehaus.jparsec.Parsers.*;
-import static org.codehaus.jparsec.Scanners.isChar;
-import static org.codehaus.jparsec.Scanners.pattern;
+import static org.codehaus.jparsec.Scanners.*;
 import static org.codehaus.jparsec.pattern.Patterns.regex;
 import static org.codehaus.jparsec.pattern.Patterns.string;
 
@@ -159,13 +157,17 @@ public class CissaParser {
     }
 
     private static Parser<ValueExpression> literalExpression() {
-        Parser<CSSValue> literal = or(numberLiteral(), colorLiteral(), stringLiteral(), builtinFunctionLiteral(), identifierLiteral());
-
-        return literal.map(new Map<CSSValue, ValueExpression>() {
+        return literal().map(new Map<CSSValue, ValueExpression>() {
             public ValueExpression map(CSSValue value) {
                 return ValueExpression.literal(value);
             }
         });
+    }
+
+    private static Parser<CSSValue> literal() {
+        Parser.Reference<CSSValue> literal = Parser.newReference();
+        literal.set(or(numberLiteral(), colorLiteral(), stringLiteral(), builtinFunctionLiteral(literal.lazy()), identifierLiteral()));
+        return literal.get();
     }
 
     private static Parser<CSSValue> colorLiteral() {
@@ -176,17 +178,29 @@ public class CissaParser {
                 }
             });
 
-        Parser<CSSValue> rgbColor = Parsers.fail("TODO"); // rgb(1,2,3)
+        // TODO: rgb colors of form rgb(1,2,3)
 
-        return token(or(hashColor, rgbColor));
+        return token(hashColor);
     }
 
     private static Parser<CSSValue> stringLiteral() {
-        return Parsers.fail("not implemented");
+        return or(DOUBLE_QUOTE_STRING, SINGLE_QUOTE_STRING).map(new Map<String, CSSValue>() {
+            public CSSValue map(String s) {
+                return CSSValue.string(s.substring(1, s.length()-1));
+            }
+        }).label("string");
     }
 
-    private static Parser<CSSValue> builtinFunctionLiteral() {
-        return Parsers.fail("not implemented");
+    private static Parser<CSSValue> builtinFunctionLiteral(Parser<CSSValue> literal) {
+        Parser<String> start = token(identifier.followedBy(isChar('(')));
+        Parser<List<CSSValue>> args = literal.many();
+        Parser<String> end = token(")");
+
+        return pair(start, args.followedBy(end)).map(new Map<Pair<String, List<CSSValue>>, CSSValue>() {
+            public CSSValue map(Pair<String, List<CSSValue>> p) {
+                return CSSValue.apply(p.a, p.b);
+            }
+        });
     }
 
     private static Parser<CSSValue> numberLiteral() {

@@ -170,7 +170,6 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void supportUrlAttributeValues() {
         assertThatMarkupGeneratesIdenticalCSS("h1 { background: url(\"foo.png\") }");
     }

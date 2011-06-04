@@ -18,6 +18,30 @@ public abstract class CSSValue {
     public static CSSValue list(List<CSSValue> values) {
         return new CSSList(values);
     }
+
+    public static CSSValue apply(String name, List<CSSValue> args) {
+        return new CSSBuiltinApply(name, args);
+    }
+
+    public static CSSValue string(String s) {
+        return new CSSString(s);
+    }
+}
+
+final class CSSBuiltinApply extends CSSValue {
+
+    private final String name;
+    private final List<CSSValue> args;
+
+    CSSBuiltinApply(String name, List<CSSValue> args) {
+        this.name = name;
+        this.args = args;
+    }
+
+    @Override
+    public String toString() {
+        return name + "(" + CollectionUtils.join(args, ", ") + ")";
+    }
 }
 
 final class CSSToken extends CSSValue {
@@ -48,5 +72,20 @@ final class CSSList extends CSSValue {
     @Override
     public String toString() {
         return CollectionUtils.join(values, ", ");
+    }
+}
+
+final class CSSString extends CSSValue {
+
+    private final String value;
+
+    CSSString(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        // TODO: escaping
+        return "\"" + value + "\"";
     }
 }
