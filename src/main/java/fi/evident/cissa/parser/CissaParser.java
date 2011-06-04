@@ -1,8 +1,8 @@
 package fi.evident.cissa.parser;
 
-import fi.evident.cissa.Dimension;
-import fi.evident.cissa.DimensionUnit;
 import fi.evident.cissa.model.CSSValue;
+import fi.evident.cissa.model.Dimension;
+import fi.evident.cissa.model.DimensionUnit;
 import fi.evident.cissa.model.Selector;
 import fi.evident.cissa.template.AttributeTemplate;
 import fi.evident.cissa.template.DocumentTemplate;

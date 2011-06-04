@@ -1,10 +1,10 @@
-package fi.evident.cissa;
+package fi.evident.cissa.model;
 
 import org.junit.Test;
 
 import java.math.BigDecimal;
 
-import static fi.evident.cissa.Dimension.dimension;
+import static fi.evident.cissa.model.Dimension.dimension;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;

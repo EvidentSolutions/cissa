@@ -1,6 +1,5 @@
 package fi.evident.cissa.model;
 
-import fi.evident.cissa.Dimension;
 import fi.evident.cissa.utils.CollectionUtils;
 import fi.evident.cissa.utils.Require;
 

@@ -1,4 +1,4 @@
-package fi.evident.cissa;
+package fi.evident.cissa.model;
 
 import fi.evident.cissa.utils.Require;
 

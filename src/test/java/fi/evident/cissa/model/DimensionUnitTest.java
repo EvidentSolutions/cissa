@@ -1,12 +1,10 @@
-package fi.evident.cissa;
+package fi.evident.cissa.model;
 
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 public class DimensionUnitTest {
 
