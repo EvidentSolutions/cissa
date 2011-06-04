@@ -7,8 +7,6 @@ import org.codehaus.jparsec.Scanners;
 import org.codehaus.jparsec.functors.Map;
 import org.codehaus.jparsec.functors.Pair;
 import org.codehaus.jparsec.functors.Tuple3;
-import org.codehaus.jparsec.pattern.Pattern;
-import org.codehaus.jparsec.pattern.Patterns;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +14,6 @@ import java.util.List;
 import static org.codehaus.jparsec.Parsers.*;
 import static org.codehaus.jparsec.Scanners.*;
 import static org.codehaus.jparsec.pattern.Patterns.regex;
-import static org.codehaus.jparsec.pattern.Patterns.string;
 
 public class CissaParser {
 
@@ -224,9 +221,9 @@ public class CissaParser {
     }
 
     private static Parser<DimensionUnit> dimensionUnit() {
-        // TODO: all units here
-        Pattern units = Patterns.or(string("px"), string("pt"));
-        return pattern(units.optional(), "dimension unit").source().map(new Map<String, DimensionUnit>() {
+        Parser<String> unit = pattern(regex("([a-zA-Z]+|%)").optional(), "dimension unit").source();
+
+        return unit.map(new Map<String, DimensionUnit>() {
             public DimensionUnit map(String s) {
                 return s.isEmpty() ? DimensionUnit.EMPTY : DimensionUnit.forName(s);
             }
