@@ -4,3 +4,4 @@ syntax: glob
 target
 *~
 .DS_Store
+coverage-error.log
