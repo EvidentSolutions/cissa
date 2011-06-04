@@ -2,7 +2,12 @@ package fi.evident.cissa.parser;
 
 import fi.evident.cissa.Dimension;
 import fi.evident.cissa.DimensionUnit;
-import fi.evident.cissa.model.*;
+import fi.evident.cissa.model.CSSValue;
+import fi.evident.cissa.model.Selector;
+import fi.evident.cissa.template.AttributeTemplate;
+import fi.evident.cissa.template.DocumentTemplate;
+import fi.evident.cissa.template.RuleSetTemplate;
+import fi.evident.cissa.template.ValueExpression;
 import org.codehaus.jparsec.Parser;
 import org.codehaus.jparsec.Parsers;
 import org.codehaus.jparsec.Scanners;
@@ -32,52 +37,61 @@ public class CissaParser {
         Scanners.pattern(Patterns.regex("-?[a-zA-Z][-a-zA-Z0-9_]*"), "identifier").source();
 
 
-    public static Document parse(String s) {
+    public static DocumentTemplate parse(String s) {
         return document().parse(s);
     }
 
     // document:
     //      spaces* variableDefinitions ruleSet*
-    private static Parser<Document> document() {
+    private static Parser<DocumentTemplate> document() {
         // TODO: add variable definitions
-        return sequence(optSpaces, ruleSet().many()).map(new Map<List<RuleSet>, Document>() {
-            public Document map(List<RuleSet> ruleSets) {
-                return new Document(ruleSets);
+        return sequence(optSpaces, ruleSet().many()).map(new Map<List<RuleSetTemplate>, DocumentTemplate>() {
+            public DocumentTemplate map(List<RuleSetTemplate> ruleSets) {
+                return new DocumentTemplate(ruleSets);
             }
         });
     }
 
     // ruleSet:
     //      selectors { variableDefinitions attributes ruleSet* }
-    private static Parser<RuleSet> ruleSet() {
+    private static Parser<RuleSetTemplate> ruleSet() {
         Parser<List<Selector>> selectors = selectors().followedBy(optSpaces).followedBy(openingBrace).followedBy(optSpaces).label("selectors");
-        Parser<List<Attribute>> attributes = attributes().followedBy(optSpaces).followedBy(closingBrace).label("attributes");
+        Parser<List<AttributeTemplate>> attributes = attributes().followedBy(optSpaces).followedBy(closingBrace).label("attributes");
 
-        return tuple(selectors, attributes).map(new Map<Pair<List<Selector>, List<Attribute>>, RuleSet>() {
-            public RuleSet map(Pair<List<Selector>, List<Attribute>> pair) {
-                return new RuleSet(pair.a, pair.b);
+        return tuple(selectors, attributes).map(new Map<Pair<List<Selector>, List<AttributeTemplate>>, RuleSetTemplate>() {
+            public RuleSetTemplate map(Pair<List<Selector>, List<AttributeTemplate>> pair) {
+                return new RuleSetTemplate(pair.a, pair.b);
             }
         }).label("rule-set");
     }
 
-    private static Parser<List<Attribute>> attributes() {
+    private static Parser<List<AttributeTemplate>> attributes() {
         return attribute().sepBy(semicolon);
     }
 
-    private static Parser<Attribute> attribute() {
-        return tuple(identifier.followedBy(colon), attributeValues()).map(new Map<Pair<String, List<CSSValue>>, Attribute>() {
-            public Attribute map(Pair<String, List<CSSValue>> pair) {
-                return new Attribute(pair.a, pair.b, false);
+    private static Parser<AttributeTemplate> attribute() {
+        return tuple(identifier.followedBy(colon), attributeValues()).map(new Map<Pair<String, List<ValueExpression>>, AttributeTemplate>() {
+            public AttributeTemplate map(Pair<String, List<ValueExpression>> pair) {
+                return new AttributeTemplate(pair.a, pair.b, false);
             }
         }).label("attribute");
     }
 
-    private static Parser<List<CSSValue>> attributeValues() {
+    private static Parser<List<ValueExpression>> attributeValues() {
         return attributeValue().sepBy(optSpaces);
     }
 
-    private static Parser<CSSValue> attributeValue() {
-        return tokenValue().or(numericValue()).label("attribute value");
+    private static Parser<ValueExpression> attributeValue() {
+        return literalExpression();
+    }
+
+    private static Parser<ValueExpression> literalExpression() {
+        Parser<CSSValue> literal = tokenValue().or(numericValue());
+        return literal.map(new Map<CSSValue, ValueExpression>() {
+            public ValueExpression map(CSSValue value) {
+                return ValueExpression.literal(value);
+            }
+        });
     }
 
     private static Parser<CSSValue> numericValue() {

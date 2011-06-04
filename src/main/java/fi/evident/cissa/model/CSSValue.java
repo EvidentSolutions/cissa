@@ -1,7 +1,10 @@
 package fi.evident.cissa.model;
 
 import fi.evident.cissa.Dimension;
+import fi.evident.cissa.utils.CollectionUtils;
 import fi.evident.cissa.utils.Require;
+
+import java.util.List;
 
 public abstract class CSSValue {
 
@@ -11,6 +14,10 @@ public abstract class CSSValue {
 
     public static CSSValue token(String token) {
         return new CSSToken(token);
+    }
+
+    public static CSSValue list(List<CSSValue> values) {
+        return new CSSList(values);
     }
 }
 
@@ -41,5 +48,21 @@ final class CSSToken extends CSSValue {
     @Override
     public String toString() {
         return token;
+    }
+}
+
+final class CSSList extends CSSValue {
+
+    private final List<CSSValue> values;
+
+    CSSList(List<CSSValue> values) {
+        Require.argumentNotNull("values", values);
+
+        this.values = values;
+    }
+
+    @Override
+    public String toString() {
+        return CollectionUtils.join(values, ", ");
     }
 }

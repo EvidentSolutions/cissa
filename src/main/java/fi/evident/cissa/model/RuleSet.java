@@ -1,5 +1,7 @@
 package fi.evident.cissa.model;
 
+import fi.evident.cissa.utils.Require;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,9 +11,14 @@ public final class RuleSet {
     private final List<Selector> selectors = new ArrayList<Selector>();
     private final List<Attribute> attributes = new ArrayList<Attribute>();
 
-    public RuleSet(List<Selector> selectors, List<Attribute> attributes) {
+    public RuleSet(List<Selector> selectors) {
         this.selectors.addAll(selectors);
-        this.attributes.addAll(attributes);
+    }
+
+    public void addAttribute(Attribute attribute) {
+        Require.argumentNotNull("attribute", attribute);
+
+        attributes.add(attribute);
     }
 
     @Override
