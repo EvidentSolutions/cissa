@@ -198,6 +198,17 @@
     <mapping directory="" vcs="hg4idea" />
   </component>
   <component name="libraryTable">
+    <library name="Maven: jparsec:jparsec:2.0">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/jparsec/jparsec/2.0/jparsec-2.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/jparsec/jparsec/2.0/jparsec-2.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/jparsec/jparsec/2.0/jparsec-2.0-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Maven: junit:junit:4.8.2">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.8.2/junit-4.8.2.jar!/" />

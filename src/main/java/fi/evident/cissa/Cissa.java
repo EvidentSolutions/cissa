@@ -1,16 +1,12 @@
 package fi.evident.cissa;
 
-import fi.evident.cissa.model.Document;
+import fi.evident.cissa.parser.CissaParser;
 
 public final class Cissa {
 
     private Cissa() { }
 
     public static String generate(String markup) {
-        return process(markup).toString();
-    }
-
-    private static Document process(String markup) {
-        throw new RuntimeException("unsupported markup: " + markup);
+        return CissaParser.parse(markup).toString();
     }
 }
