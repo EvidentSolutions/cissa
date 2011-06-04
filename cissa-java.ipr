@@ -184,6 +184,7 @@
         <w>multi</w>
         <w>paren</w>
         <w>parens</w>
+        <w>unary</w>
       </words>
     </dictionary>
   </component>

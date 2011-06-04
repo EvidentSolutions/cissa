@@ -24,13 +24,19 @@ public class CissaParser {
 
     private static final Parser<?> optSpaces =
         Parsers.or(Scanners.WHITESPACES, Scanners.JAVA_LINE_COMMENT, Scanners.JAVA_BLOCK_COMMENT).many_();
-    private static final Parser<?> colon = token(Scanners.isChar(':'));
-    private static final Parser<?> comma = token(Scanners.isChar(','));
-    private static final Parser<?> semicolon = token(Scanners.isChar(';'));
-    private static final Parser<?> openingBrace = token(Scanners.isChar('{'));
-    private static final Parser<?> closingBrace = token(Scanners.isChar('}'));
-    private static final Parser<?> openingParen = token(Scanners.isChar('('));
-    private static final Parser<?> closingParen = token(Scanners.isChar(')'));
+    private static final Parser<?> colon = token(':');
+    private static final Parser<?> comma = token(',');
+    private static final Parser<?> semicolon = token(';');
+    private static final Parser<?> openingBrace = token('{');
+    private static final Parser<?> closingBrace = token('}');
+    private static final Parser<?> openingParen = token('(');
+    private static final Parser<?> closingParen = token(')');
+
+    private static final Parser<BinaryOperator> multiply = token('*').retn(BinaryOperator.MULTIPLY);
+    private static final Parser<BinaryOperator> divide = token('/').retn(BinaryOperator.DIVIDE);
+    private static final Parser<BinaryOperator> plus = token('+').retn(BinaryOperator.ADD);
+    private static final Parser<BinaryOperator> minus = token('-').retn(BinaryOperator.SUBTRACT);
+
     private static final Parser<String> identifier =
         Scanners.pattern(Patterns.regex("-?[a-zA-Z][-a-zA-Z0-9_]*"), "identifier").source();
 
@@ -112,14 +118,14 @@ public class CissaParser {
         Parser<ValueExpression> factor =
             Parsers.or(variableValue(), literalExpression(), unaryNeg.lazy(), inParens(exp.lazy()));
 
-        unaryNeg.set(sequence(minus(), factor).map(new Map<ValueExpression, ValueExpression>() {
+        unaryNeg.set(sequence(minus, factor).map(new Map<ValueExpression, ValueExpression>() {
             public ValueExpression map(ValueExpression exp) {
                 return ValueExpression.binary(ValueExpression.ZERO, BinaryOperator.SUBTRACT, exp);
             }
         }));
 
         Parser<ValueExpression> term =
-            tuple(factor, tuple(multiply().or(divide()), factor).many()).map(new Map<Pair<ValueExpression, List<Pair<BinaryOperator, ValueExpression>>>, ValueExpression>() {
+            tuple(factor, tuple(multiply.or(divide), factor).many()).map(new Map<Pair<ValueExpression, List<Pair<BinaryOperator, ValueExpression>>>, ValueExpression>() {
                 public ValueExpression map(Pair<ValueExpression, List<Pair<BinaryOperator, ValueExpression>>> p) {
                     ValueExpression l = p.a;
                     for (Pair<BinaryOperator,ValueExpression> pp : p.b)
@@ -128,7 +134,7 @@ public class CissaParser {
                 }
             });
 
-        exp.set(tuple(term, tuple(plus().or(minus()), term).many()).map(new Map<Pair<ValueExpression, List<Pair<BinaryOperator, ValueExpression>>>, ValueExpression>() {
+        exp.set(tuple(term, tuple(plus.or(minus), term).many()).map(new Map<Pair<ValueExpression, List<Pair<BinaryOperator, ValueExpression>>>, ValueExpression>() {
             public ValueExpression map(Pair<ValueExpression, List<Pair<BinaryOperator, ValueExpression>>> p) {
                 ValueExpression l = p.a;
                 for (Pair<BinaryOperator,ValueExpression> pp : p.b)
@@ -137,22 +143,6 @@ public class CissaParser {
             }
         }));
         return exp.get();
-    }
-
-    private static Parser<BinaryOperator> multiply() {
-        return token(Scanners.isChar('*')).retn(BinaryOperator.MULTIPLY);
-    }
-
-    private static Parser<BinaryOperator> divide() {
-        return token(Scanners.isChar('/')).retn(BinaryOperator.DIVIDE);
-    }
-
-    private static Parser<BinaryOperator> plus() {
-        return token(Scanners.isChar('+')).retn(BinaryOperator.ADD);
-    }
-
-    private static Parser<BinaryOperator> minus() {
-        return token(Scanners.isChar('-')).retn(BinaryOperator.SUBTRACT);
     }
 
     private static Parser<ValueExpression> variableValue() {
@@ -233,6 +223,10 @@ public class CissaParser {
 
     private static <T> Parser<T> token(Parser<T> p) {
         return p.followedBy(optSpaces);
+    }
+
+    private static Parser<?> token(char c) {
+        return token(Scanners.isChar(c));
     }
 
     private static <T> Parser<List<T>> commaSep(Parser<T> p) {
