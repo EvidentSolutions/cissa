@@ -45,6 +45,10 @@ public enum BinaryOperator {
         this.symbol = symbol;
     }
 
+    public String getSymbol() {
+        return symbol;
+    }
+
     public CSSValue evaluate(CSSValue left, CSSValue right) {
         if (left instanceof CSSAmount && right instanceof CSSAmount)
             return CSSValue.amount(evaluateDimensions(((CSSAmount) left).getValue(), ((CSSAmount) right).getValue()));
