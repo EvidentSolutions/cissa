@@ -28,7 +28,10 @@ public class CissaParser {
     private static final Parser<?> semicolon = token(Scanners.isChar(';'));
     private static final Parser<?> openingBrace = token(Scanners.isChar('{'));
     private static final Parser<?> closingBrace = token(Scanners.isChar('}'));
-        
+    private static final Parser<String> identifier =
+        Scanners.pattern(Patterns.regex("-?[a-zA-Z][-a-zA-Z0-9_]*"), "identifier").source();
+
+
     public static Document parse(String s) {
         return document().parse(s);
     }
@@ -62,7 +65,7 @@ public class CissaParser {
     }
 
     private static Parser<Attribute> attribute() {
-        return tuple(Scanners.IDENTIFIER.followedBy(colon), attributeValues()).map(new Map<Pair<String, List<CSSValue>>, Attribute>() {
+        return tuple(identifier.followedBy(colon), attributeValues()).map(new Map<Pair<String, List<CSSValue>>, Attribute>() {
             public Attribute map(Pair<String, List<CSSValue>> pair) {
                 return new Attribute(pair.a, pair.b, false);
             }
@@ -104,7 +107,7 @@ public class CissaParser {
     }
 
     private static Parser<CSSValue> tokenValue() {
-        return Scanners.IDENTIFIER.map(new Map<String, CSSValue>() {
+        return identifier.map(new Map<String, CSSValue>() {
             public CSSValue map(String s) {
                 return CSSValue.token(s);
             }
@@ -119,7 +122,7 @@ public class CissaParser {
     }
 
     private static Parser<Selector> selector() {
-        Parser<String> simpleSelector = Scanners.isChar('*').source().or(Scanners.IDENTIFIER);
+        Parser<String> simpleSelector = Scanners.isChar('*').source().or(identifier);
 
         return simpleSelector.map(new Map<String, Selector>() {
             public Selector map(String s) {

@@ -218,9 +218,14 @@ public class CissaTest {
     @Test
     @Ignore
     public void listOfValuesAreSupported() {
-        assertThatMarkup("h1 { font-family: Arial, sans-serif }", generatesCSS("h1 { font-family: Arial, sans-serif }"));
+        assertThatMarkupGeneratesIdenticalCSS("h1 { font-family: Arial, sans-serif }");
     }
-    
+
+    @Test
+    public void supportIdentifiersWithDashes() {
+        assertThatMarkupGeneratesIdenticalCSS("h1 { font-family: sans-serif }");
+    }
+
     // support detecting overflow
     // support nested comments
     // support value functions
