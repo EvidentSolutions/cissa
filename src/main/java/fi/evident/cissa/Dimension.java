@@ -67,7 +67,7 @@ public final class Dimension {
 
     @Override
     public String toString() {
-        return value.toString();
+        return value.toString() + unit.toString();
     }
 
     @Override

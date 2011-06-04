@@ -19,6 +19,11 @@ public class DimensionTest {
         assertEquals("-1.2", dimension("-1.2").toString());
     }
 
+    @Test
+    public void stringRepresentationShouldIncludeUnit() {
+        assertEquals("8m", dimension(8, DimensionUnit.forName("m")).toString());
+    }
+
     @Test(expected = Exception.class)
     public void shouldNotBeConstructableFromNull() {
         dimension((BigDecimal) null);
