@@ -101,7 +101,6 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void supportCompoundSelectors() {
         assertThatMarkupGeneratesIdenticalCSS("h1 h2 { width: 10pt }");
         assertThatMarkupGeneratesIdenticalCSS("h1 h2 h3 { width: 10pt }");
@@ -115,14 +114,12 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void supportHashesInSelectors() {
         assertThatMarkupGeneratesIdenticalCSS("h1#foo { width: 10pt }");
         assertThatMarkupGeneratesIdenticalCSS("#foo { width: 10pt }");
     }
 
     @Test
-    @Ignore
     public void supportClassesInSelectors() {
         assertThatMarkupGeneratesIdenticalCSS("h1.foo { width: 10pt }");
         assertThatMarkupGeneratesIdenticalCSS(".foo { width: 10pt }");
@@ -141,14 +138,6 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
-    public void supportStringsAsAttributeValues() {
-        assertThatMarkupGeneratesIdenticalCSS("[id='foo'] { width: 10pt }");
-        assertThatMarkupGeneratesIdenticalCSS("[id=\"foo\"] { width: 10pt }");
-    }
-
-    @Test
-    @Ignore
     public void supportPseudoClassesInSelectors() {
         assertThatMarkupGeneratesIdenticalCSS("a:link { color: red }");
         assertThatMarkupGeneratesIdenticalCSS(":link { color: red }");
@@ -161,13 +150,25 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void supportMultipleSuccessiveSelectors() {
         assertThatMarkupGeneratesIdenticalCSS(".foo .bar { width: 10pt }");
         assertThatMarkupGeneratesIdenticalCSS(".foo.bar { width: 10pt }");
 
         assertThatMarkupGeneratesIdenticalCSS("#foo.bar { width: 10pt }");
         assertThatMarkupGeneratesIdenticalCSS("#foo .bar { width: 10pt }");
+    }
+
+    @Test
+    public void allowUnderscoredInClassAndIdNames() {
+        assertThatMarkup(".foo_bar { color: red }", generatesCSS(".foo_bar { color: red }"));
+        assertThatMarkup("#foo_bar { color: red }", generatesCSS("#foo_bar { color: red }"));
+    }
+
+    @Test
+    @Ignore
+    public void supportStringsAsAttributeValues() {
+        assertThatMarkupGeneratesIdenticalCSS("[id='foo'] { width: 10pt }");
+        assertThatMarkupGeneratesIdenticalCSS("[id=\"foo\"] { width: 10pt }");
     }
 
     @Test
@@ -203,13 +204,6 @@ public class CissaTest {
     @Ignore
     public void supportAddingColors() {
         assertThatMarkup("h1 { color: #112233 + #111100 }", generatesCSS("h1 { color: #223333 }"));
-    }
-
-    @Test
-    @Ignore
-    public void allowUnderscoredInClassAndIdNames() {
-        assertThatMarkup(".foo_bar { color: red }", generatesCSS(".foo_bar { color: red }"));
-        assertThatMarkup("#foo_bar { color: red }", generatesCSS("#foo_bar { color: red }"));
     }
 
     @Test

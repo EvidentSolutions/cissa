@@ -17,13 +17,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.codehaus.jparsec.Parsers.*;
+import static org.codehaus.jparsec.Scanners.isChar;
 import static org.codehaus.jparsec.Scanners.pattern;
+import static org.codehaus.jparsec.pattern.Patterns.regex;
 import static org.codehaus.jparsec.pattern.Patterns.string;
 
 public class CissaParser {
 
     private static final Parser<?> optSpaces =
-        Parsers.or(Scanners.WHITESPACES, Scanners.JAVA_LINE_COMMENT, Scanners.JAVA_BLOCK_COMMENT).many_();
+        or(Scanners.WHITESPACES, Scanners.JAVA_LINE_COMMENT, Scanners.JAVA_BLOCK_COMMENT).many_();
     private static final Parser<?> colon = token(':');
     private static final Parser<?> comma = token(',');
     private static final Parser<?> semicolon = token(';');
@@ -36,9 +38,10 @@ public class CissaParser {
     private static final Parser<BinaryOperator> divide = token('/').retn(BinaryOperator.DIVIDE);
     private static final Parser<BinaryOperator> plus = token('+').retn(BinaryOperator.ADD);
     private static final Parser<BinaryOperator> minus = token('-').retn(BinaryOperator.SUBTRACT);
+    private static final Parser<String> combinator = token(isChar('+').or(isChar('>')).source());
 
     private static final Parser<String> identifier =
-        Scanners.pattern(Patterns.regex("-?[a-zA-Z][-a-zA-Z0-9_]*"), "identifier").source();
+        Scanners.pattern(regex("-?[a-zA-Z][-a-zA-Z0-9_]*"), "identifier").source();
 
 
     public static DocumentTemplate parse(String s) {
@@ -78,7 +81,7 @@ public class CissaParser {
     }
 
     private static Parser<String> variable() {
-        return token(sequence(Scanners.isChar('@'), identifier)).label("variable");
+        return token(sequence(isChar('@'), identifier)).label("variable");
     }
 
     private static Parser<List<AttributeTemplate>> attributes() {
@@ -116,7 +119,7 @@ public class CissaParser {
         Parser.Reference<ValueExpression> unaryNeg = Parser.newReference();
 
         Parser<ValueExpression> factor =
-            Parsers.or(variableValue(), literalExpression(), unaryNeg.lazy(), inParens(exp.lazy()));
+            or(variableValue(), literalExpression(), unaryNeg.lazy(), inParens(exp.lazy()));
 
         unaryNeg.set(sequence(minus, factor).map(new Map<ValueExpression, ValueExpression>() {
             public ValueExpression map(ValueExpression exp) {
@@ -204,13 +207,46 @@ public class CissaParser {
     }
 
     private static Parser<Selector> selector() {
-        Parser<String> simpleSelector = Scanners.isChar('*').source().or(identifier);
+        Parser.Reference<Selector> self = Parser.newReference();
+        Parser<String> comb = combinator.optional("");
 
-        return simpleSelector.map(new Map<String, Selector>() {
-            public Selector map(String s) {
-                return new Selector(s);
+        self.set(tuple(simpleSelector(), tuple(comb, self.lazy()).optional()).map(new Map<Pair<Selector, Pair<String, Selector>>, Selector>() {
+            public Selector map(Pair<Selector, Pair<String, Selector>> p) {
+                return (p.b == null)
+                    ? p.a
+                    : Selector.compound(p.a, p.b.a, p.b.b);
             }
-        });
+        }));
+
+        return self.get();
+    }
+
+    private static Parser<Selector> simpleSelector() {
+        Parser<String> idRef = Scanners.pattern(regex("#[-a-zA-Z0-9_]*"), "idref").source();
+        Parser<String> classRef = sequence(isChar('.'), identifier).source();
+        Parser<String> pseudo = sequence(isChar(':'), identifier).source();
+        Parser<String> spec = or(idRef, classRef, attrib(), pseudo);
+        Parser<String> elementName = or(isChar('*').source(), identifier);
+
+        Parser<Selector> withElement =
+           tuple(elementName, spec.many()).map(new Map<Pair<String, List<String>>, Selector>() {
+               public Selector map(Pair<String, List<String>> p) {
+                   return Selector.simple(p.a, p.b);
+               }
+           });
+
+        Parser<Selector> withoutElement =
+            spec.many1().map(new Map<List<String>, Selector>() {
+                public Selector map(List<String> specs) {
+                    return Selector.simple("", specs);
+                }
+            });
+
+        return token(or(withElement, withoutElement));
+    }
+
+    private static Parser<String> attrib() {
+        return Parsers.fail("attrib not supported");
     }
 
     private static <T> Parser<T> inBraces(Parser<T> p) {
@@ -226,7 +262,7 @@ public class CissaParser {
     }
 
     private static Parser<?> token(char c) {
-        return token(Scanners.isChar(c));
+        return token(isChar(c));
     }
 
     private static <T> Parser<List<T>> commaSep(Parser<T> p) {
