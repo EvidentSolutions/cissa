@@ -10,16 +10,20 @@ public final class DimensionUnit {
     }
 
     public DimensionUnit add(DimensionUnit unit) {
+        return mergeAdditive("+", unit);
+    }
+
+    public DimensionUnit subtract(DimensionUnit unit) {
+        return mergeAdditive("-", unit);
+    }
+
+    private DimensionUnit mergeAdditive(String op, DimensionUnit unit) {
         if (unit == null) throw new IllegalArgumentException("rhs is null");
 
         if (this == EMPTY || this.equals(unit)) return unit;
         if (unit == EMPTY) return this;
 
-        throw new IncompatibleUnitsException(this, "+", unit);
-    }
-
-    public DimensionUnit subtract(DimensionUnit unit) {
-        return add(unit);
+        throw new IncompatibleUnitsException(this, op, unit);
     }
 
     public DimensionUnit multiply(DimensionUnit unit) {
