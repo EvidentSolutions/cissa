@@ -205,7 +205,6 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void supportImportantRules() {
         assertThatMarkup("h1 { color: red !important }", generatesCSS("h1 { color: red !important }"));
     }

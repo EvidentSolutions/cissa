@@ -9,6 +9,7 @@ import org.codehaus.jparsec.Parser;
 import org.codehaus.jparsec.Scanners;
 import org.codehaus.jparsec.functors.Map;
 import org.codehaus.jparsec.functors.Pair;
+import org.codehaus.jparsec.functors.Tuple3;
 import org.codehaus.jparsec.pattern.Pattern;
 import org.codehaus.jparsec.pattern.Patterns;
 
@@ -90,9 +91,11 @@ public class CissaParser {
     }
 
     private static Parser<AttributeTemplate> attribute() {
-        return tuple(token(identifier).followedBy(colon), attributeValues()).map(new Map<Pair<String, List<ValueExpression>>, AttributeTemplate>() {
-            public AttributeTemplate map(Pair<String, List<ValueExpression>> pair) {
-                return new AttributeTemplate(pair.a, pair.b, false);
+        Parser<Boolean> important = token("!important").retn(true).optional(false);
+
+        return tuple(token(identifier).followedBy(colon), attributeValues().followedBy(optSpaces), important).map(new Map<Tuple3<String, List<ValueExpression>, Boolean>, AttributeTemplate>() {
+            public AttributeTemplate map(Tuple3<String, List<ValueExpression>, Boolean> t) {
+                return new AttributeTemplate(t.a, t.b, t.c);
             }
         }).label("attribute");
     }
