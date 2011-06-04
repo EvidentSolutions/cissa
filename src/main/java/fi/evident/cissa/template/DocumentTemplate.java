@@ -20,7 +20,7 @@ public final class DocumentTemplate {
         Environment env = new Environment();
 
         for (VariableDefinition var : variables)
-            var.bindTo(env);
+            env.bind(var);
 
         Document doc = new Document();
 

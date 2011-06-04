@@ -61,13 +61,17 @@ public class CissaParser {
     // ruleSet:
     //      selectors { variableDefinitions attributes ruleSet* }
     private static Parser<RuleSetTemplate> ruleSet() {
-        Parser<Pair<List<VariableDefinition>, List<AttributeTemplate>>> attributes = inBraces(tuple(variableDefinition().many(), attributes()));
+        Parser.Reference<RuleSetTemplate> self = Parser.newReference();
 
-        return tuple(selectors(), attributes).map(new Map<Pair<List<Selector>, Pair<List<VariableDefinition>, List<AttributeTemplate>>>, RuleSetTemplate>() {
-            public RuleSetTemplate map(Pair<List<Selector>, Pair<List<VariableDefinition>, List<AttributeTemplate>>> pair) {
-                return new RuleSetTemplate(pair.a, pair.b.a, pair.b.b);
+        Parser<Tuple3<List<VariableDefinition>, List<AttributeTemplate>, List<RuleSetTemplate>>> attributes = inBraces(tuple(variableDefinition().many(), attributes(), self.lazy().many()));
+
+        self.set(tuple(selectors(), attributes).map(new Map<Pair<List<Selector>, Tuple3<List<VariableDefinition>, List<AttributeTemplate>, List<RuleSetTemplate>>>, RuleSetTemplate>() {
+            public RuleSetTemplate map(Pair<List<Selector>, Tuple3<List<VariableDefinition>, List<AttributeTemplate>, List<RuleSetTemplate>>> p) {
+                return new RuleSetTemplate(p.a, p.b.a, p.b.b, p.b.c);
             }
-        });
+        }));
+
+        return self.get();
     }
 
     private static Parser<VariableDefinition> variableDefinition() {
@@ -83,7 +87,7 @@ public class CissaParser {
     }
 
     private static Parser<List<AttributeTemplate>> attributes() {
-        return attribute().sepBy(semicolon).followedBy(optSpaces).followedBy(semicolon.optional());
+        return attribute().atomic().sepBy(semicolon).followedBy(optSpaces).followedBy(semicolon.optional());
     }
 
     private static Parser<AttributeTemplate> attribute() {

@@ -18,7 +18,7 @@ public class EnvironmentTest {
     @Test
     public void extendingEnvironmentMakesVariableAvailable() {
         CSSValue value = CSSValue.token("bar");
-        env.extend("foo", value);
+        env.bind("foo", value);
 
         assertEquals(value, env.lookup("foo"));
     }
@@ -26,7 +26,7 @@ public class EnvironmentTest {
     @Test
     public void lookupsAreDelegatedToParentIfBindingIsNotFound() {
         CSSValue value = CSSValue.token("bar");
-        parent.extend("foo", value);
+        parent.bind("foo", value);
 
         assertEquals(value, env.lookup("foo"));
     }
@@ -36,8 +36,8 @@ public class EnvironmentTest {
         CSSValue bar = CSSValue.token("bar");
         CSSValue baz = CSSValue.token("baz");
 
-        parent.extend("foo", bar);
-        env.extend("foo", baz);
+        parent.bind("foo", bar);
+        env.bind("foo", baz);
 
         assertEquals(baz, env.lookup("foo"));
     }

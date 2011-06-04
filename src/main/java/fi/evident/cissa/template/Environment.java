@@ -31,10 +31,23 @@ public final class Environment {
         throw new UnboundVariableException(name);
     }
 
-    public void extend(String name, CSSValue value) {
+    public void bind(String name, CSSValue value) {
         Require.argumentNotNull("name", name);
         Require.argumentNotNull("value", value);
         
         bindings.put(name, value);
+    }
+
+    public void bind(VariableDefinition binding) {
+        bind(binding.name, binding.exp.evaluate(this));
+    }
+
+    public Environment extend(Iterable<VariableDefinition> bindings) {
+        Environment newEnv = new Environment(this);
+
+        for (VariableDefinition binding : bindings)
+            newEnv.bind(binding);
+
+        return newEnv;
     }
 }

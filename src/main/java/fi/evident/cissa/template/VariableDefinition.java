@@ -4,8 +4,8 @@ import fi.evident.cissa.utils.Require;
 
 public final class VariableDefinition {
 
-    private final String name;
-    private final ValueExpression exp;
+    final String name;
+    final ValueExpression exp;
 
     public VariableDefinition(String name, ValueExpression exp) {
         Require.argumentNotNull("name", name);
@@ -13,9 +13,5 @@ public final class VariableDefinition {
 
         this.name = name;
         this.exp = exp;
-    }
-
-    public void bindTo(Environment env) {
-        env.extend(name, exp.evaluate(env));
     }
 }

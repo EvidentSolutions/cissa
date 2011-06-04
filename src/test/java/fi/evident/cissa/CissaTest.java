@@ -13,7 +13,6 @@ public class CissaTest {
 
     @Test
     public void prettyPrintValidCSS() {
-        assertThatMarkup("h1 { }", generatesCSS("h1 {  }"));
         assertThatMarkup("h1 { color: red }", generatesCSS("h1 { color: red }"));
     }
 
@@ -195,7 +194,6 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void supportNestedRuleSets() {
         assertThatMarkup("h1 { h2 { color: red } }", generatesCSS("h1 h2 { color: red }"));
         assertThatMarkup("h1, h2 { h3 { color: red } }", generatesCSS("h1 h3, h2 h3 { color: red }"));
