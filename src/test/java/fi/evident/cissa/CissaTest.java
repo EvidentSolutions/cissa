@@ -72,9 +72,13 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void localVariablesShouldShadowGlobals() {
         assertThatMarkup("@foo: 12px; h1 { @foo: 13px; width: @foo }", generatesCSS("h1 { width: 13px }"));
+    }
+
+    @Test
+    @Ignore
+    public void outerVariableIsInScopeForInitializationOfLocalVariable() {
         assertThatMarkup("@foo: 12px; h1 { @foo: @foo+2; width: @foo }", generatesCSS("h1 { width: 14px }"));
     }
 
@@ -182,7 +186,6 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void allowLineBreaksInsideMultiLineComments() {
         assertThatMarkup("/* \n */ h1 { color: red }", generatesCSS("h1 { color: red }"));
     }
