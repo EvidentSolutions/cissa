@@ -41,10 +41,11 @@ public class CissaParser {
     // document:
     //      spaces* variableDefinitions ruleSet*
     private static Parser<DocumentTemplate> document() {
-        // TODO: add variable definitions
-        return sequence(optSpaces, ruleSet().many()).map(new Map<List<RuleSetTemplate>, DocumentTemplate>() {
-            public DocumentTemplate map(List<RuleSetTemplate> ruleSets) {
-                return new DocumentTemplate(ruleSets);
+        Parser<List<VariableDefinition>> variables = sequence(optSpaces, variableDefinition().many());
+
+        return tuple(variables, ruleSet().many()).map(new Map<Pair<List<VariableDefinition>, List<RuleSetTemplate>>, DocumentTemplate>() {
+            public DocumentTemplate map(Pair<List<VariableDefinition>, List<RuleSetTemplate>> pair) {
+                return new DocumentTemplate(pair.a, pair.b);
             }
         });
     }

@@ -32,7 +32,6 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void supportGlobalVariables() {
         assertThatMarkup("@foo: 42px; h1 { width: @foo }", generatesCSS("h1 { width: 42px }"));
     }

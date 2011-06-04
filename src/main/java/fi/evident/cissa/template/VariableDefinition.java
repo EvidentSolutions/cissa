@@ -15,7 +15,7 @@ public final class VariableDefinition {
         this.exp = exp;
     }
 
-    public void evaluate(Environment env) {
+    public void bindTo(Environment env) {
         env.extend(name, exp.evaluate(env));
     }
 }

@@ -26,7 +26,7 @@ public final class RuleSetTemplate {
         Environment newEnv = new Environment(env);
 
         for (VariableDefinition var : variables)
-            var.evaluate(env);
+            var.bindTo(env);
 
         for (AttributeTemplate template : attributes)
             ruleSet.addAttribute(template.evaluate(env));
