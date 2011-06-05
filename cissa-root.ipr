@@ -27,9 +27,6 @@
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
   </component>
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
-  <component name="EntryPointsManager">
-    <entry_points version="2.0" />
-  </component>
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" />
     <option name="OPTION_SCOPE" value="protected" />
@@ -52,6 +49,24 @@
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
       </list>
+    </option>
+  </component>
+  <component name="NullableNotNullManager">
+    <option name="myDefaultNullable" value="org.jetbrains.annotations.Nullable" />
+    <option name="myDefaultNotNull" value="org.jetbrains.annotations.NotNull" />
+    <option name="myNullables">
+      <value>
+        <list size="0" />
+      </value>
+    </option>
+    <option name="myNotNulls">
+      <value>
+        <list size="3">
+          <item index="0" class="java.lang.String" itemvalue="org.jetbrains.annotations.NotNull" />
+          <item index="1" class="java.lang.String" itemvalue="javax.annotation.Nonnull" />
+          <item index="2" class="java.lang.String" itemvalue="edu.umd.cs.findbugs.annotations.NonNull" />
+        </list>
+      </value>
     </option>
   </component>
   <component name="Palette2">
@@ -175,25 +190,10 @@
       </item>
     </group>
   </component>
-  <component name="ProjectDictionaryState">
-    <dictionary name="komu">
-      <words>
-        <w>attrib</w>
-        <w>cissa</w>
-        <w>combinator</w>
-        <w>exps</w>
-        <w>hexify</w>
-        <w>lookups</w>
-        <w>multi</w>
-        <w>paren</w>
-        <w>parens</w>
-        <w>unary</w>
-      </words>
-    </dictionary>
-  </component>
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/cissa-java.iml" filepath="$PROJECT_DIR$/cissa-java.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cissa-core/cissa-core.iml" filepath="$PROJECT_DIR$/cissa-core/cissa-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cissa-root.iml" filepath="$PROJECT_DIR$/cissa-root.iml" />
     </modules>
   </component>
   <component name="ProjectResources">
@@ -203,7 +203,7 @@
     <output url="file://$PROJECT_DIR$/classes" />
   </component>
   <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="hg4idea" />
+    <mapping directory="$PROJECT_DIR$" vcs="hg4idea" />
   </component>
   <component name="libraryTable">
     <library name="Maven: jparsec:jparsec:2.0">
@@ -228,6 +228,22 @@
         <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.8.2/junit-4.8.2-sources.jar!/" />
       </SOURCES>
     </library>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>1.6</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
   </component>
 </project>
 
