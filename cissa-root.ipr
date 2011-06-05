@@ -203,6 +203,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/cissa-core/cissa-core.iml" filepath="$PROJECT_DIR$/cissa-core/cissa-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cissa-maven-plugin/cissa-maven-plugin.iml" filepath="$PROJECT_DIR$/cissa-maven-plugin/cissa-maven-plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/cissa-root.iml" filepath="$PROJECT_DIR$/cissa-root.iml" />
       <module fileurl="file://$PROJECT_DIR$/cissa-servlet/cissa-servlet.iml" filepath="$PROJECT_DIR$/cissa-servlet/cissa-servlet.iml" />
     </modules>
@@ -248,6 +249,17 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.8.2/junit-4.8.2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.apache.maven:maven-plugin-api:2.0">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/maven/maven-plugin-api/2.0/maven-plugin-api-2.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/maven/maven-plugin-api/2.0/maven-plugin-api-2.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/maven/maven-plugin-api/2.0/maven-plugin-api-2.0-sources.jar!/" />
       </SOURCES>
     </library>
   </component>

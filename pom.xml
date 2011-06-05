@@ -11,6 +11,7 @@
     <modules>
         <module>cissa-core</module>
         <module>cissa-servlet</module>
+        <module>cissa-maven-plugin</module>
     </modules>
 
     <properties>
