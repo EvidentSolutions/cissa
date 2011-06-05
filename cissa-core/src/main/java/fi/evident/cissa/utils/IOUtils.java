@@ -27,6 +27,15 @@ import java.nio.charset.Charset;
 
 public final class IOUtils {
 
+    public static void writeFile(File file, String data, Charset charset) throws IOException {
+        FileOutputStream out = new FileOutputStream(file);
+        try {
+            out.write(data.getBytes(charset));
+        } finally {
+            out.close();
+        }
+    }
+
     public static String readFileAsString(String file, Charset charset) throws IOException {
         return readFileAsString(new File(file), charset);
     }
