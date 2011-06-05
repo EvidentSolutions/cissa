@@ -29,7 +29,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class IOUtilsTest {
 
@@ -40,7 +43,7 @@ public class IOUtilsTest {
         String str = "\u00c1guas de Mar\u00e7o";
         InputStream in = new MockInputStream(str, UTF8);
 
-        assertEquals(str, IOUtils.readInputStreamAsString(in, UTF8));
+        assertThat(IOUtils.readInputStreamAsString(in, UTF8), is(str));
     }
 
     @Test
@@ -49,7 +52,7 @@ public class IOUtilsTest {
 
         IOUtils.readInputStreamAsString(in, UTF8);
 
-        assertTrue("closed", in.closed);
+        assertThat("closed", in.closed, is(true));
     }
 
     @Test
@@ -58,9 +61,10 @@ public class IOUtilsTest {
         try {
             IOUtils.readInputStreamAsString(in, UTF8);
             fail("Expected failure");
+
         } catch (IOException e) {
-            assertSame("exception", in.exception, e);
-            assertTrue("closed", in.closed);
+            assertThat("exception", e, is(sameInstance(in.exception)));
+            assertThat("closed", in.closed, is(true));
         }
     }
 

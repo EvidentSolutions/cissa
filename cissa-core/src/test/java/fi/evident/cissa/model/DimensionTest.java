@@ -27,23 +27,23 @@ import org.junit.Test;
 import java.math.BigDecimal;
 
 import static fi.evident.cissa.model.Dimension.dimension;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 
 public class DimensionTest {
 
     @Test
     public void shouldHaveSensibleStringRepresentation() {
-        assertEquals("8", dimension(8).toString());
-        assertEquals("5", dimension("5").toString());
-        assertEquals("5.123", dimension("5.123").toString());
-        assertEquals("-1.2", dimension("-1.2").toString());
+        assertThat(dimension(8).toString(), is("8"));
+        assertThat(dimension("5").toString(), is("5"));
+        assertThat(dimension("5.123").toString(), is("5.123"));
+        assertThat(dimension("-1.2").toString(), is("-1.2"));
     }
 
     @Test
     public void stringRepresentationShouldIncludeUnit() {
-        assertEquals("8m", dimension(8, DimensionUnit.forName("m")).toString());
+        DimensionUnit m = DimensionUnit.forName("m");
+        assertThat(dimension(8, m).toString(), is("8m"));
     }
 
     @Test(expected = Exception.class)
@@ -63,29 +63,29 @@ public class DimensionTest {
 
     @Test
     public void shouldDefineEquality() {
-        assertThat("equal with same value", dimension("8.424"), equalTo(dimension("8.424")));
-        assertThat("not equal with different value", dimension("8.4"), not(equalTo(dimension("4.5"))));
-        assertThat("not equal with null", dimension("123"), not(equalTo(null)));
-        assertFalse("not equal with other type", dimension("42").equals("foo"));
+        assertThat("equal with same value", dimension("8.424"), is(dimension("8.424")));
+        assertThat("not equal with different value", dimension("8.4"), is(not(dimension("4.5"))));
+        assertThat("not equal with null", dimension("123"), is(not(equalTo(null))));
+        assertThat("not equal with other type", dimension("42").equals("foo"), is(false));
     }
 
     @Test
     public void definesConsistentHashCode() {
-        assertEquals(dimension("5.4").hashCode(), dimension("5.4").hashCode());
+        assertThat(dimension("5.4").hashCode(), is(dimension("5.4").hashCode()));
     }
 
     @Test
     public void shouldSupportBasicArithmetic() {
-        assertEquals(dimension("8.6"), dimension("6.1").add(dimension("2.5")));
-        assertEquals(dimension("3.6"), dimension("6.1").subtract(dimension("2.5")));
-        assertEquals(dimension("15.25"), dimension("6.1").multiply(dimension("2.5")));
-        assertEquals(dimension("2.44"), dimension("6.1").divide(dimension("2.5")));
-        assertEquals(dimension("2.5"), dimension("5").divide(dimension("2")));
+        assertThat(dimension("6.1").add(dimension("2.5")),      is(dimension("8.6")));
+        assertThat(dimension("6.1").subtract(dimension("2.5")), is(dimension("3.6")));
+        assertThat(dimension("6.1").multiply(dimension("2.5")), is(dimension("15.25")));
+        assertThat(dimension("6.1").divide(dimension("2.5")),   is(dimension("2.44")));
+        assertThat(dimension("5").divide(dimension("2")),       is(dimension("2.5")));
     }
 
     @Test
     public void byDefaultThereIsNoUnit() {
-        assertEquals(DimensionUnit.EMPTY, dimension("5.5").getUnit());
+        assertThat(dimension("5.5").getUnit(), is(DimensionUnit.EMPTY));
     }
 
     @Test
@@ -94,16 +94,16 @@ public class DimensionTest {
         DimensionUnit unit = DimensionUnit.forName("foo");
 
         Dimension dim = dimension(value, unit);
-        assertEquals(value, dim.getValue());
-        assertEquals(unit, dim.getUnit());
+        assertThat(dim.getValue(), is(value));
+        assertThat(dim.getUnit(), is(unit));
     }
 
     @Test
     public void shouldCalculateCorrectUnits() {
         DimensionUnit m = DimensionUnit.forName("m");
 
-        assertEquals(dimension(10, m), dimension(5, m).add(dimension(5, m)));
-        assertEquals(dimension(10, m), dimension(5).add(dimension(5, m)));
-        assertEquals(dimension(10, m), dimension(5, m).add(dimension(5)));
+        assertThat(dimension(5, m).add(dimension(5, m)), is(dimension(10, m)));
+        assertThat(dimension(5).add(dimension(5, m)), is(dimension(10, m)));
+        assertThat(dimension(5, m).add(dimension(5)), is(dimension(10, m)));
     }
 }

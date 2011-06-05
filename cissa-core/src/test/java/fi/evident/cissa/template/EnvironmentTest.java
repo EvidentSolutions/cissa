@@ -25,7 +25,8 @@ package fi.evident.cissa.template;
 import fi.evident.cissa.model.CSSValue;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class EnvironmentTest {
 
@@ -42,7 +43,7 @@ public class EnvironmentTest {
         CSSValue value = CSSValue.token("bar");
         env.bind("foo", value);
 
-        assertEquals(value, env.lookup("foo"));
+        assertThat(env.lookup("foo"), is(value));
     }
 
     @Test
@@ -50,7 +51,7 @@ public class EnvironmentTest {
         CSSValue value = CSSValue.token("bar");
         parent.bind("foo", value);
 
-        assertEquals(value, env.lookup("foo"));
+        assertThat(env.lookup("foo"), is(value));
     }
 
     @Test
@@ -61,6 +62,6 @@ public class EnvironmentTest {
         parent.bind("foo", bar);
         env.bind("foo", baz);
 
-        assertEquals(baz, env.lookup("foo"));
+        assertThat(env.lookup("foo"), is(baz));
     }
 }

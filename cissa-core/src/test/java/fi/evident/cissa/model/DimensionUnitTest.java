@@ -25,8 +25,9 @@ package fi.evident.cissa.model;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class DimensionUnitTest {
 
@@ -36,7 +37,7 @@ public class DimensionUnitTest {
 
     @Test
     public void toStringUsesNameOfUnit() {
-        assertEquals("foo", DimensionUnit.forName("foo").toString());
+        assertThat(DimensionUnit.forName("foo").toString(), is("foo"));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -51,23 +52,23 @@ public class DimensionUnitTest {
 
     @Test
     public void equalityIsDefinedInTermsOfName() {
-        assertThat("equal with same name", DimensionUnit.forName("foo"), equalTo(DimensionUnit.forName("foo")));
-        assertThat("not equal with different name", DimensionUnit.forName("foo"), not(equalTo(DimensionUnit.forName("bar"))));
-        assertThat("not equal with null", DimensionUnit.forName("foo"), not(equalTo(null)));
-        assertFalse("not equal with other type", DimensionUnit.forName("foo").equals("foo"));
+        assertThat("equal with same name", DimensionUnit.forName("foo"), is(DimensionUnit.forName("foo")));
+        assertThat("not equal with different name", DimensionUnit.forName("foo"), is(not(DimensionUnit.forName("bar"))));
+        assertThat("not equal with null", DimensionUnit.forName("foo"), is(not(equalTo(null))));
+        assertThat("not equal with other type", DimensionUnit.forName("foo").equals("foo"), is(false));
     }
 
     @Test
     public void hashCodeIsConsistentWithEquality() {
-        assertEquals(DimensionUnit.forName("foo").hashCode(), DimensionUnit.forName("foo").hashCode());
+        assertThat(DimensionUnit.forName("foo").hashCode(), is(DimensionUnit.forName("foo").hashCode()));
     }
 
     @Test
     public void addingUnits() {
-        assertEquals(e, e.add(e));
-        assertEquals(m, e.add(m));
-        assertEquals(m, m.add(e));
-        assertEquals(m, m.add(m));
+        assertThat(e.add(e), is(e));
+        assertThat(e.add(m), is(m));
+        assertThat(m.add(e), is(m));
+        assertThat(m.add(m), is(m));
     }
 
     @Test(expected = IncompatibleUnitsException.class)
@@ -82,10 +83,10 @@ public class DimensionUnitTest {
 
     @Test
     public void subtractingUnits() {
-        assertEquals(e, e.subtract(e));
-        assertEquals(m, e.subtract(m));
-        assertEquals(m, m.subtract(e));
-        assertEquals(m, m.subtract(m));
+        assertThat(e.subtract(e), is(e));
+        assertThat(e.subtract(m), is(m));
+        assertThat(m.subtract(e), is(m));
+        assertThat(m.subtract(m), is(m));
     }
 
     @Test(expected = IncompatibleUnitsException.class)
@@ -100,9 +101,9 @@ public class DimensionUnitTest {
 
     @Test
     public void multiplyingUnits() {
-        assertEquals("untyped multiplication", e, e.multiply(e));
-        assertEquals("multiplication by scalar", m, e.multiply(m));
-        assertEquals("multiplication by scalar", m, m.multiply(e));
+        assertThat("untyped multiplication",   e.multiply(e), is(e));
+        assertThat("multiplication by scalar", e.multiply(m), is(m));
+        assertThat("multiplication by scalar", m.multiply(e), is(m));
     }
 
     @Test(expected = IncompatibleUnitsException.class)
@@ -122,9 +123,9 @@ public class DimensionUnitTest {
 
     @Test
     public void dividingUnits() {
-        assertEquals("untyped division", e, e.divide(e));
-        assertEquals("division by scalar", m, m.divide(e));
-        assertEquals("division by same type", e, m.divide(m));
+        assertThat("untyped division",      e.divide(e), is(e));
+        assertThat("division by scalar",    m.divide(e), is(m));
+        assertThat("division by same type", m.divide(m), is(e));
     }
 
     @Test(expected = IncompatibleUnitsException.class)

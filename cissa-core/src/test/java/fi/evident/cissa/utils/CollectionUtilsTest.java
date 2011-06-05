@@ -28,27 +28,28 @@ import java.util.ArrayList;
 
 import static fi.evident.cissa.utils.CollectionUtils.join;
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class CollectionUtilsTest {
 
     @Test
     public void joiningWillUseSeparatorBetweenItems() {
-        assertEquals("foo, bar, baz", join(asList("foo", "bar", "baz"), ", "));
+        assertThat(join(asList("foo", "bar", "baz"), ", "), is("foo, bar, baz"));
     }
 
     @Test
     public void joiningSingleItem() {
-        assertEquals("foo", join(asList("foo"), ", "));
+        assertThat(join(asList("foo"), ", "), is("foo"));
     }
 
     @Test
     public void joiningEmptyCollectionWillReturnEmptyString() {
-        assertEquals("", join(new ArrayList<Object>(), "foo"));
+        assertThat(join(new ArrayList<Object>(), "foo"), is(""));
     }
 
     @Test
     public void joiningWithNullsWillPrintNull() {
-        assertEquals("foo, null, baz", join(asList("foo", null, "baz"), ", "));
+        assertThat(join(asList("foo", null, "baz"), ", "), is("foo, null, baz"));
     }
 }
