@@ -1,0 +1,79 @@
+Cissa is a simple CSS-preprocessor. Any valid CSS-file is in itself valid Cissa-markup,
+but Cissa provides some additional features on top of CSS. The features are briefly
+introduced here, but see src/test/scala/fi/evident/cissa/CissaSpec.scala for details.
+
+Single line comments
+====================
+
+You can use // to make comments that reach until the end of line.
+
+Nested selectors
+================
+
+Normally you have to repeat your selectors several times when writing CSS. This
+makes it hard to see the structure of the file and to make changes.
+
+  .foo {
+    rules
+  }
+
+  .foo .bar {
+    rules
+  }
+
+  .foo .baz {
+    rules
+  }
+
+Cissa lets you nest rule-sets inside other rule-sets:
+
+  .foo {
+    rules
+
+    .bar {
+      rules
+    }
+
+    .baz {
+      rules
+    }
+  }
+
+Variables
+=========
+
+Often you need to refer to the same thing in multiple different rules. Cissa let's you
+define variables in any scope. The variables are visible to all nested scopes.
+
+  @favoriteColor: green;
+
+  .foo {
+    background-color: @favoriteColor;
+  }
+
+  .bar {
+    @otherColor: red;
+
+    color: @favoriteColor;
+    background: @otherColor;
+
+    .baz {
+      color: @otherColor;
+    }
+  }
+
+Expressions
+===========
+
+You can use arithmetic expressions when computing values of properties. Cissa will
+make sure that you use compatible units.
+
+  @leftColumnWidth: 300px;
+  @defaultPadding: 10px;
+  @myColor: #442485;
+
+  .center {
+    position: absolute;
+    left: @leftColumnWidth + @defaultPadding;
+    color: @myColor + #111111;
+  }
