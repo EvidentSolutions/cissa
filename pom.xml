@@ -31,6 +31,12 @@
         </license>
     </licenses>
 
+    <scm>
+      <url>https://bitbucket.org/evidentsolutions/cissa</url>
+      <connection>scm:hg:https://bitbucket.org/evidentsolutions/cissa</connection>
+      <developerConnection>scm:hg:ssh://hg@bitbucket.org/evidentsolutions/cissa</developerConnection>
+    </scm>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
