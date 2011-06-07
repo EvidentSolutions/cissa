@@ -97,17 +97,3 @@ final class CSSList extends CSSValue {
     }
 }
 
-final class CSSString extends CSSValue {
-
-    private final String value;
-
-    CSSString(String value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        // TODO: escaping
-        return "\"" + value + "\"";
-    }
-}
