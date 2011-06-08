@@ -26,13 +26,6 @@ public class EvaluationException extends RuntimeException {
 
     private final SourceRange range;
 
-    @Deprecated
-    public EvaluationException(String message) {
-        super(message);
-
-        this.range = null;
-    }
-
     public EvaluationException(String message, SourceRange range) {
         super(message + " at " + range);
 

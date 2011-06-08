@@ -47,7 +47,7 @@ public final class DimensionUnit {
         if (this == EMPTY || this.equals(unit)) return unit;
         if (unit == EMPTY) return this;
 
-        throw new IncompatibleUnitsException(this, op, unit);
+        throw new IncompatibleUnitsException();
     }
 
     public DimensionUnit multiply(DimensionUnit unit) {
@@ -56,7 +56,7 @@ public final class DimensionUnit {
         if (this == EMPTY) return unit;
         if (unit == EMPTY) return this;
 
-        throw new IncompatibleUnitsException(this, "*", unit);
+        throw new IncompatibleUnitsException();
     }
 
     public DimensionUnit divide(DimensionUnit unit) {
@@ -65,7 +65,7 @@ public final class DimensionUnit {
         if (unit == EMPTY) return this;
         if (unit.equals(this)) return EMPTY;
 
-        throw new IncompatibleUnitsException(this, "/", unit);
+        throw new IncompatibleUnitsException();
     }
 
     public static DimensionUnit forName(String name) {

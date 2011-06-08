@@ -203,12 +203,14 @@ public final class CissaParser {
         ValueExpression term = parseTerm();
 
         while (true) {
-            if (lexer.consumeTokenIf("+")) {
+            if (lexer.nextCharacterIs('+')) {
+                SourceRange range = lexer.consumeTokenWithSource("+");
                 ValueExpression t2 = parseTerm();
-                term = ValueExpression.binary(term, BinaryOperator.ADD, t2);
-            } else if (lexer.consumeTokenIf("-")) {
+                term = ValueExpression.binary(term, BinaryOperator.ADD, t2, range);
+            } else if (lexer.nextCharacterIs('-')) {
+                SourceRange range = lexer.consumeTokenWithSource("-");
                 ValueExpression t2 = parseTerm();
-                term = ValueExpression.binary(term, BinaryOperator.SUBTRACT, t2);
+                term = ValueExpression.binary(term, BinaryOperator.SUBTRACT, t2, range);
             } else {
                 break;
             }
@@ -223,12 +225,14 @@ public final class CissaParser {
         ValueExpression term = parseFactor();
 
         while (true) {
-            if (lexer.consumeTokenIf("*")) {
+            if (lexer.nextCharacterIs('*')) {
+                SourceRange range = lexer.consumeTokenWithSource("*");
                 ValueExpression t2 = parseFactor();
-                term = ValueExpression.binary(term, BinaryOperator.MULTIPLY, t2);
-            } else if (lexer.consumeTokenIf("/")) {
+                term = ValueExpression.binary(term, BinaryOperator.MULTIPLY, t2, range);
+            } else if (lexer.nextCharacterIs('/')) {
+                SourceRange range = lexer.consumeTokenWithSource("/");
                 ValueExpression t2 = parseFactor();
-                term = ValueExpression.binary(term, BinaryOperator.DIVIDE, t2);
+                term = ValueExpression.binary(term, BinaryOperator.DIVIDE, t2, range);
             } else {
                 break;
             }
@@ -244,9 +248,10 @@ public final class CissaParser {
             Token<String> token = lexer.parseVariable();
             return ValueExpression.variable(token.getValue(), token.getRange());
 
-        } else if (lexer.consumeTokenIf("-")) {
+        } else if (lexer.nextCharacterIs('-')) {
+            SourceRange range = lexer.consumeTokenWithSource("-");
             ValueExpression exp = parseFactor();
-            return ValueExpression.binary(ValueExpression.ZERO, BinaryOperator.SUBTRACT, exp);
+            return ValueExpression.binary(ValueExpression.ZERO, BinaryOperator.SUBTRACT, exp, range);
 
         } else if (lexer.consumeTokenIf("(")) {
             ValueExpression exp = parseExpression();

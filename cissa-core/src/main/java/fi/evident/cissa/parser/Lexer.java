@@ -96,10 +96,22 @@ final class Lexer {
 
     public boolean consumeTokenIf(String s) {
         if (startsWith(s)) {
-            consumeToken(s);
+            position += s.length();
+            skipSpaces();
             return true;
         } else
             return false;
+    }
+
+    public SourceRange consumeTokenWithSource(String s) {
+        if (startsWith(s)) {
+            SourceRange range = new SourceRange(position, position + s.length(), s);
+            position += s.length();
+            skipSpaces();
+            return range;
+        } else {
+            throw parseError(s);
+        }
     }
     
     public void consumeToken(String s) {

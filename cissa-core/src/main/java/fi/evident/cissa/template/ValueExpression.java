@@ -24,6 +24,8 @@ package fi.evident.cissa.template;
 
 import fi.evident.cissa.model.CSSValue;
 import fi.evident.cissa.model.Dimension;
+import fi.evident.cissa.model.IncompatibleUnitsException;
+import sun.awt.SunHints;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,11 +70,17 @@ public abstract class ValueExpression {
         };
     }
 
-    public static ValueExpression binary(final ValueExpression left, final BinaryOperator op, final ValueExpression right) {
+    public static ValueExpression binary(final ValueExpression left, final BinaryOperator op, final ValueExpression right, final SourceRange range) {
         return new ValueExpression() {
             @Override
             public CSSValue evaluate(Environment env) {
-                return op.evaluate(left.evaluate(env), right.evaluate(env));
+                CSSValue lhs = left.evaluate(env);
+                CSSValue rhs = right.evaluate(env);
+                try {
+                    return op.evaluate(lhs, rhs);
+                } catch (IncompatibleUnitsException e) {
+                    throw new EvaluationException("incompatible units " + lhs + " " + op + " " + rhs, range);
+                }
             }
         };
     }

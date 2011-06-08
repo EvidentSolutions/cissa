@@ -250,6 +250,11 @@ public class CissaTest {
         assertThatMarkupGeneratesEvaluationExceptionWhereRange("h1 { width: @foo }", isRange(12, 16, "@foo"));
     }
 
+    @Test
+    public void arithmeticErrorsKnowTheirSourceLocation() {
+        assertThatMarkupGeneratesEvaluationExceptionWhereRange("h1 { width: 1px + 2pt }", isRange(16, 17, "+"));
+    }
+
     // support detecting overflow
     // support nested comments
     // support value functions
