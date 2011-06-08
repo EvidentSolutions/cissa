@@ -22,54 +22,58 @@
 
 package fi.evident.cissa.template;
 
-import fi.evident.cissa.model.CSSValue;
+import com.sun.tools.corba.se.idl.toJavaPortable.StringGen;
 import fi.evident.cissa.utils.Require;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.xml.stream.events.EndDocument;
 
-public final class Environment {
+public final class SourceRange {
 
-    private final Environment parent;
-    private final Map<String, CSSValue> bindings = new HashMap<String, CSSValue>();
+    private final int start;
+    private final int end;
+    private final String sourceFragment;
 
-    public Environment() {
-        this(null);
+    public SourceRange(int start, int end, String sourceFragment) {
+        Require.argumentNotNull("sourceFragment", sourceFragment);
+
+        this.start = start;
+        this.end = end;
+        this.sourceFragment = sourceFragment;
     }
 
-    public Environment(Environment parent) {
-        this.parent = parent;
+    public int getStart() {
+        return start;
     }
 
-    public CSSValue lookup(String name) {
-        Require.argumentNotNull("name", name);
+    public int getEnd() {
+        return end;
+    }
 
-        for (Environment env = this; env != null; env = env.parent) {
-            CSSValue value = env.bindings.get(name);
-            if (value != null)
-                return value;
+    public String getSourceFragment() {
+        return sourceFragment;
+    }
+
+    @Override
+    public String toString() {
+        return start + "-" + end;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o instanceof SourceRange) {
+            SourceRange rhs = (SourceRange) o;
+            return start == rhs.start
+                && end == rhs.end
+                && sourceFragment.equals(rhs.sourceFragment);
         }
 
-        return null;
+        return false;
     }
 
-    public void bind(String name, CSSValue value) {
-        Require.argumentNotNull("name", name);
-        Require.argumentNotNull("value", value);
-        
-        bindings.put(name, value);
-    }
-
-    public void bind(VariableDefinition binding) {
-        bind(binding.name, binding.exp.evaluate(this));
-    }
-
-    public Environment extend(Iterable<VariableDefinition> bindings) {
-        Environment newEnv = new Environment(this);
-
-        for (VariableDefinition binding : bindings)
-            newEnv.bind(binding);
-
-        return newEnv;
+    @Override
+    public int hashCode() {
+        return start * 79 + end;
     }
 }

@@ -34,11 +34,15 @@ public abstract class ValueExpression {
 
     public abstract CSSValue evaluate(Environment env);
 
-    public static ValueExpression variable(final String name) {
+    public static ValueExpression variable(final String name, final SourceRange range) {
         return new ValueExpression() {
             @Override
             public CSSValue evaluate(Environment env) {
-                return env.lookup(name);
+                CSSValue value = env.lookup(name);
+                if (value != null)
+                    return value;
+                else
+                    throw new UnboundVariableException(name, range);
             }
         };
     }

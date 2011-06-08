@@ -20,23 +20,22 @@
  * THE SOFTWARE.
  */
 
-package fi.evident.cissa.template;
+package fi.evident.cissa.parser;
 
-public class EvaluationException extends RuntimeException {
+import fi.evident.cissa.template.SourceRange;
 
+final class Token<T> {
+
+    private final T value;
     private final SourceRange range;
 
-    @Deprecated
-    public EvaluationException(String message) {
-        super(message);
-
-        this.range = null;
+    Token(T value, SourceRange range) {
+        this.value = value;
+        this.range = range;
     }
 
-    public EvaluationException(String message, SourceRange range) {
-        super(message + " at " + range);
-
-        this.range = range;
+    public T getValue() {
+        return value;
     }
 
     public SourceRange getRange() {

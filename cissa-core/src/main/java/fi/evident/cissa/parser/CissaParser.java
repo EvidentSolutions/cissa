@@ -59,7 +59,7 @@ public final class CissaParser {
         List<VariableDefinition> result = new ArrayList<VariableDefinition>();
 
         while (lexer.nextCharacterIs('@')) {
-            String variable = lexer.parseVariable();
+            String variable = lexer.parseVariable().getValue();
             lexer.consumeToken(":");
 
             ValueExpression value = parseValue();
@@ -241,8 +241,8 @@ public final class CissaParser {
     //      variable | literal | '-' factor | '(' expression ')'
     private ValueExpression parseFactor() {
         if (lexer.nextCharacterIs('@')) {
-            String var = lexer.parseVariable();
-            return ValueExpression.variable(var);
+            Token<String> token = lexer.parseVariable();
+            return ValueExpression.variable(token.getValue(), token.getRange());
 
         } else if (lexer.consumeTokenIf("-")) {
             ValueExpression exp = parseFactor();

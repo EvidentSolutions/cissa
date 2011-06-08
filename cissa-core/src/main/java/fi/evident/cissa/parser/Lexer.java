@@ -26,6 +26,8 @@ import fi.evident.cissa.model.CSSColor;
 import fi.evident.cissa.model.CSSValue;
 import fi.evident.cissa.model.Dimension;
 import fi.evident.cissa.model.DimensionUnit;
+import fi.evident.cissa.template.SourceRange;
+import fi.evident.cissa.template.ValueExpression;
 
 import static java.lang.Character.isDigit;
 import static java.lang.Character.isLetter;
@@ -142,16 +144,23 @@ final class Lexer {
         this.position = position;
     }
 
-    public String parseVariable() {
+    public Token<String> parseVariable() {
+        int start = position;
         assume("@");
-        return parseIdentifier();
+        return parseIdentifierInternal(start);
+    }
+
+    public String parseIdentifier() {
+        return parseIdentifierInternal(position).getValue();
     }
     
-    public String parseIdentifier() {
+    private Token<String> parseIdentifierInternal(int start) {
         StringBuilder sb = new StringBuilder();
 
         while (hasMore() && isIdentifierChar(current()))
             sb.append(read());
+
+        SourceRange range = rangeFrom(start);
 
         skipSpaces();
 
@@ -159,7 +168,11 @@ final class Lexer {
         if (name.isEmpty() || isDigit(name.charAt(0)))
             throw parseError("identifier");
 
-        return name;
+        return new Token<String>(name, range);
+    }
+
+    private SourceRange rangeFrom(int start) {
+        return new SourceRange(start, position, source.substring(start, position));
     }
 
     private static boolean isIdentifierChar(char ch) {

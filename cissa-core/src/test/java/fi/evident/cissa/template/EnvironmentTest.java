@@ -26,6 +26,7 @@ import fi.evident.cissa.model.CSSValue;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public class EnvironmentTest {
@@ -33,9 +34,9 @@ public class EnvironmentTest {
     private Environment parent = new Environment();
     private Environment env = new Environment(parent);
 
-    @Test(expected = UnboundVariableException.class)
-    public void lookingUpUnboundVariableThrowsException() {
-        env.lookup("foo");
+    @Test
+    public void lookingUpUnboundVariableReturnsNull() {
+        assertThat(env.lookup("foo"), is(nullValue()));
     }
 
     @Test

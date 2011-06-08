@@ -24,11 +24,13 @@ package fi.evident.cissa;
 
 import fi.evident.cissa.parser.ParseException;
 import fi.evident.cissa.template.EvaluationException;
+import fi.evident.cissa.template.SourceRange;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -243,6 +245,11 @@ public class CissaTest {
         assertThatMarkupGeneratesEvaluationException("h1 { width: @foo }");
     }
 
+    @Test
+    public void unboundVariableErrorsKnowTheirSourceLocation() {
+        assertThatMarkupGeneratesEvaluationExceptionWhereRange("h1 { width: @foo }", isRange(12, 16, "@foo"));
+    }
+
     // support detecting overflow
     // support nested comments
     // support value functions
@@ -261,10 +268,15 @@ public class CissaTest {
     }
 
     private static void assertThatMarkupGeneratesEvaluationException(String markup) {
+        assertThatMarkupGeneratesEvaluationExceptionWhereRange(markup, is(CoreMatchers.<SourceRange>anything()));
+    }
+
+    private static void assertThatMarkupGeneratesEvaluationExceptionWhereRange(String markup, Matcher<SourceRange> rangeMatcher) {
         try {
             Cissa.generate(markup);
             fail("Expected evaluation exception");
         } catch (EvaluationException e) {
+            assertThat(e.getRange(), rangeMatcher);
         }
     }
 
@@ -274,5 +286,9 @@ public class CissaTest {
 
     private static void assertThatMarkupGeneratesIdenticalCSS(String markup) {
         assertThatMarkup(markup, generatesCSS(markup));
+    }
+
+    private static Matcher<SourceRange> isRange(final int start, final int end, final String sourceFragment) {
+        return is(new SourceRange(start, end, sourceFragment));
     }
 }
