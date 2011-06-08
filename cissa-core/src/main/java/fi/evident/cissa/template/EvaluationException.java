@@ -22,8 +22,8 @@
 
 package fi.evident.cissa.template;
 
-public class UnboundVariableException extends EvaluationException {
-    public UnboundVariableException(String name) {
-        super("unbound variable '" + name + "'");
+public class EvaluationException extends RuntimeException {
+    public EvaluationException(String message) {
+        super(message);
     }
 }

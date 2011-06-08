@@ -22,10 +22,7 @@
 
 package fi.evident.cissa.template;
 
-import fi.evident.cissa.model.CSSAmount;
-import fi.evident.cissa.model.CSSColor;
-import fi.evident.cissa.model.CSSValue;
-import fi.evident.cissa.model.Dimension;
+import fi.evident.cissa.model.*;
 
 public enum BinaryOperator {
     ADD("+") {
@@ -73,17 +70,24 @@ public enum BinaryOperator {
 
     public CSSValue evaluate(CSSValue left, CSSValue right) {
         if (left instanceof CSSAmount && right instanceof CSSAmount)
-            return CSSValue.amount(evaluateDimensions(((CSSAmount) left).getValue(), ((CSSAmount) right).getValue()));
-
-        if (left instanceof CSSColor && right instanceof CSSColor)
+            return evaluateAmounts((CSSAmount) left, (CSSAmount) right);
+        else if (left instanceof CSSColor && right instanceof CSSColor)
             return evaluateColors((CSSColor) left, (CSSColor) right);
-
-        throw new IllegalArgumentException("can't calculate " + left + " " + symbol + " " + right);
+        else
+            throw new EvaluationException("can't calculate " + left + " " + symbol + " " + right);
     }
 
     protected abstract Dimension evaluateDimensions(Dimension left, Dimension right);
 
+    private CSSValue evaluateAmounts(CSSAmount left, CSSAmount right) {
+        try {
+            return CSSValue.amount(evaluateDimensions(left.getValue(), right.getValue()));
+        } catch (IncompatibleUnitsException e) {
+            throw new EvaluationException(e.getMessage());
+        }
+    }
+
     protected CSSColor evaluateColors(CSSColor left, CSSColor right) {
-        throw new UnsupportedOperationException("operation " + symbol + " is not supported for colors");
+        throw new EvaluationException("operation " + symbol + " is not supported for colors");
     }
 }

@@ -23,6 +23,7 @@
 package fi.evident.cissa;
 
 import fi.evident.cissa.parser.ParseException;
+import fi.evident.cissa.template.EvaluationException;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.Ignore;
@@ -236,6 +237,12 @@ public class CissaTest {
         assertThatMarkupGeneratesIdenticalCSS("h1 { font-family: sans-serif }");
     }
 
+    @Test
+    public void evaluationErrorsProduceEvaluationException() {
+        assertThatMarkupGeneratesEvaluationException("h1 { width: 1px + 2pt }");
+        assertThatMarkupGeneratesEvaluationException("h1 { width: @foo }");
+    }
+
     // support detecting overflow
     // support nested comments
     // support value functions
@@ -250,6 +257,14 @@ public class CissaTest {
             assertThat(css, matcher);
         } catch (ParseException e) {
             fail("Failed to parse markup '" + markup + "'\n  error: " + e);
+        }
+    }
+
+    private static void assertThatMarkupGeneratesEvaluationException(String markup) {
+        try {
+            Cissa.generate(markup);
+            fail("Expected evaluation exception");
+        } catch (EvaluationException e) {
         }
     }
 
