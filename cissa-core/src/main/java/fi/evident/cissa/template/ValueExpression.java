@@ -78,6 +78,8 @@ public abstract class ValueExpression {
                 CSSValue rhs = right.evaluate(env);
                 try {
                     return op.evaluate(lhs, rhs);
+                } catch (ArithmeticException e) {
+                    throw new EvaluationException(e.getMessage() + " occurred in " + lhs + " " + op + " " + rhs, range);
                 } catch (IncompatibleUnitsException e) {
                     throw new EvaluationException("incompatible units " + lhs + " " + op + " " + rhs, range);
                 }
