@@ -22,7 +22,7 @@
 
 package fi.evident.cissa;
 
-import org.codehaus.jparsec.error.ParserException;
+import fi.evident.cissa.parser.ParseException;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.Ignore;
@@ -248,7 +248,7 @@ public class CissaTest {
         try {
             String css = Cissa.generate(markup);
             assertThat(css, matcher);
-        } catch (ParserException e) {
+        } catch (ParseException e) {
             fail("Failed to parse markup '" + markup + "'\n  error: " + e);
         }
     }

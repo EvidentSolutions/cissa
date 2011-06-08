@@ -25,11 +25,16 @@ package fi.evident.cissa.model;
 import fi.evident.cissa.utils.Require;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static fi.evident.cissa.utils.CollectionUtils.join;
 
 public abstract class Selector {
+
+    public static Selector simple(String selector) {
+        return simple(selector, Collections.<String>emptyList());
+    }
 
     public static Selector simple(String selector, List<String> specs) {
         return new SimpleSelector(selector, specs);
