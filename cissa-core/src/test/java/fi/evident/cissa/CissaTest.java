@@ -27,7 +27,6 @@ import fi.evident.cissa.template.EvaluationException;
 import fi.evident.cissa.template.SourceRange;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -214,9 +213,9 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void supportsRGBColorLiteral() {
         assertThatMarkup("h1 { color: rgb(0, 0, 0) }", generatesCSS("h1 { color: #000000 }"));
+        assertThatMarkup("h1 { color: rgb(255, 42, 5) }", generatesCSS("h1 { color: #ff2a05 }"));
     }
 
     @Test
