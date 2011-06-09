@@ -130,11 +130,6 @@ public class CissaTest {
     }
 
     @Test
-    public void invalidImportantRule() {
-        assertThatMarkupGeneratesParseFailure("h1 { margin: 1 2 3 4 !importants }");
-    }
-
-    @Test
     public void supportCompoundSelectors() {
         assertThatMarkupGeneratesIdenticalCSS("h1 h2 { width: 10pt }");
         assertThatMarkupGeneratesIdenticalCSS("h1 h2 h3 { width: 10pt }");
@@ -275,13 +270,6 @@ public class CissaTest {
         assertThatMarkupGeneratesEvaluationExceptionWhereRange("h1 { width: 42 / 0 }", isRange(15, 16, "/"));
     }
 
-    @Test
-    public void invalidSelectors() {
-        assertThatMarkupGeneratesParseFailure("foo, { }");
-        assertThatMarkupGeneratesParseFailure(", { }");
-        assertThatMarkupGeneratesParseFailure(", foo { }");
-    }
-
     // support detecting overflow
     // support nested comments
     // support value functions
@@ -296,14 +284,6 @@ public class CissaTest {
             assertThat(css, matcher);
         } catch (ParseException e) {
             fail("Failed to parse markup '" + markup + "'\n  error: " + e);
-        }
-    }
-
-    private static void assertThatMarkupGeneratesParseFailure(String markup) {
-        try {
-            Cissa.generate(markup);
-            fail("Expected ParserException for markup '" + markup + "'");
-        } catch (ParseException e) {
         }
     }
 
