@@ -38,7 +38,7 @@ public final class CSSAmount extends CSSValue {
     }
 
     @Override
-    public String toString() {
-        return value.toString();
+    void writeTo(CSSWriter writer) {
+        writer.write(value.toString());
     }
 }

@@ -20,27 +20,15 @@
  * THE SOFTWARE.
  */
 
-package fi.evident.cissa.utils;
+package fi.evident.cissa.model;
 
-import java.util.Iterator;
+abstract class CSSNode {
+    abstract void writeTo(CSSWriter writer);
 
-public class CollectionUtils {
-
-    private CollectionUtils() { }
-
-    public static String join(Iterable<?> items) {
-        return join(items, "");
-    }
-
-    public static String join(Iterable<?> items, String separator) {
-        StringBuilder sb = new StringBuilder();
-
-        for (Iterator<?> it = items.iterator(); it.hasNext(); ) {
-            sb.append(it.next());
-            if (it.hasNext())
-                sb.append(separator);
-        }
-
-        return sb.toString();
+    @Override
+    public String toString() {
+        CSSWriter writer = new CSSWriter();
+        writeTo(writer);
+        return writer.toString();
     }
 }

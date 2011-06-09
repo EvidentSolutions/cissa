@@ -31,7 +31,7 @@ final class CSSString extends CSSValue {
     }
 
     @Override
-    public String toString() {
-        return "\"" + value.replace("\"", "\\\"") + "\"";
+    void writeTo(CSSWriter writer) {
+        writer.write("\"").write(value.replace("\"", "\\\"")).write("\"");
     }
 }

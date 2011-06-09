@@ -57,8 +57,8 @@ public final class CSSColor extends CSSValue {
     }
 
     @Override
-    public String toString() {
-        return "#" + hexify(clamp(r), clamp(g), clamp(b));
+    void writeTo(CSSWriter writer) {
+        writer.write("#").write(hexify(clamp(r), clamp(g), clamp(b)));
     }
 
     private static int clamp(int c) {

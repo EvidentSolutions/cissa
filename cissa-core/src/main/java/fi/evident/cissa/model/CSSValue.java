@@ -22,12 +22,11 @@
 
 package fi.evident.cissa.model;
 
-import fi.evident.cissa.utils.CollectionUtils;
 import fi.evident.cissa.utils.Require;
 
 import java.util.List;
 
-public abstract class CSSValue {
+public abstract class CSSValue extends CSSNode {
 
     public static CSSValue amount(Dimension value) {
         return new CSSAmount(value);
@@ -61,8 +60,8 @@ final class CSSBuiltinApply extends CSSValue {
     }
 
     @Override
-    public String toString() {
-        return name + "(" + CollectionUtils.join(args, ", ") + ")";
+    void writeTo(CSSWriter writer) {
+        writer.write(name).write("(").writeSeparated(args, ", ").write(")");
     }
 }
 
@@ -76,8 +75,8 @@ final class CSSToken extends CSSValue {
     }
 
     @Override
-    public String toString() {
-        return token;
+    void writeTo(CSSWriter writer) {
+        writer.write(token);
     }
 }
 
@@ -92,8 +91,8 @@ final class CSSList extends CSSValue {
     }
 
     @Override
-    public String toString() {
-        return CollectionUtils.join(values, ", ");
+    void writeTo(CSSWriter writer) {
+        writer.writeSeparated(values, ", ");
     }
 }
 

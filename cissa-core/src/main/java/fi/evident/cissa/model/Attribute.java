@@ -27,9 +27,7 @@ import fi.evident.cissa.utils.Require;
 import java.util.ArrayList;
 import java.util.List;
 
-import static fi.evident.cissa.utils.CollectionUtils.join;
-
-public final class Attribute {
+public final class Attribute extends CSSNode {
     private final String name;
     private final List<CSSValue> values = new ArrayList<CSSValue>();
     private final boolean important;
@@ -46,7 +44,10 @@ public final class Attribute {
     }
 
     @Override
-    public String toString() {
-        return name + ": " + join(values, " ") + (important ? " !important" : "");
+    public void writeTo(CSSWriter writer) {
+        writer.write(name).write(": ").writeSeparated(values, " ");
+
+        if (important)
+            writer.write(" !important");
     }
 }

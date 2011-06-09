@@ -28,9 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static fi.evident.cissa.utils.CollectionUtils.join;
-
-public abstract class Selector {
+public abstract class Selector extends CSSNode {
 
     public static Selector simple(String selector) {
         return simple(selector, Collections.<String>emptyList());
@@ -57,8 +55,8 @@ final class SimpleSelector extends Selector {
     }
 
     @Override
-    public String toString() {
-        return elementName + join(specs);
+    void writeTo(CSSWriter writer) {
+        writer.write(elementName).writeAll(specs);
     }
 }
 
@@ -78,9 +76,13 @@ final class CompoundSelector extends Selector {
     }
 
     @Override
-    public String toString() {
-        return combinator.isEmpty()
-            ? left + " " + right
-            : left + " " + combinator + " " + right;
+    void writeTo(CSSWriter writer) {
+        left.writeTo(writer);
+        writer.write(" ");
+        
+        if (!combinator.isEmpty())
+            writer.write(combinator).write(" ");
+
+        right.writeTo(writer);
     }
 }

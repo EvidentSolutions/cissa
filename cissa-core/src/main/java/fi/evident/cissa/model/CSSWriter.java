@@ -20,36 +20,35 @@
  * THE SOFTWARE.
  */
 
-package fi.evident.cissa.utils;
+package fi.evident.cissa.model;
 
-import org.junit.Test;
+import java.util.Iterator;
+import java.util.List;
 
-import java.util.ArrayList;
+final class CSSWriter {
+    private final StringBuilder sb = new StringBuilder();
 
-import static fi.evident.cissa.utils.CollectionUtils.join;
-import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public class CollectionUtilsTest {
-
-    @Test
-    public void joiningWillUseSeparatorBetweenItems() {
-        assertThat(join(asList("foo", "bar", "baz"), ", "), is("foo, bar, baz"));
+    public CSSWriter write(CharSequence cs) {
+        sb.append(cs);
+        return this;
     }
 
-    @Test
-    public void joiningSingleItem() {
-        assertThat(join(asList("foo"), ", "), is("foo"));
+    public CSSWriter writeSeparated(List<? extends CSSNode> list, String separator) {
+        for (Iterator<? extends CSSNode> it = list.iterator(); it.hasNext(); ) {
+            it.next().writeTo(this);
+            if (it.hasNext())
+                write(separator);
+        }
+        return this;
     }
 
-    @Test
-    public void joiningEmptyCollectionWillReturnEmptyString() {
-        assertThat(join(new ArrayList<Object>(), "foo"), is(""));
+    @Override
+    public String toString() {
+        return sb.toString();
     }
 
-    @Test
-    public void joiningWithNullsWillPrintNull() {
-        assertThat(join(asList("foo", null, "baz"), ", "), is("foo, null, baz"));
+    public void writeAll(Iterable<String> ss) {
+        for (String s : ss)
+            write(s);
     }
 }

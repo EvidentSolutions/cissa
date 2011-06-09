@@ -22,13 +22,12 @@
 
 package fi.evident.cissa.model;
 
-import fi.evident.cissa.utils.CollectionUtils;
 import fi.evident.cissa.utils.Require;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Document {
+public final class Document extends CSSNode {
 
     private final List<RuleSet> ruleSets = new ArrayList<RuleSet>();
 
@@ -39,7 +38,7 @@ public final class Document {
     }
 
     @Override
-    public String toString() {
-        return CollectionUtils.join(ruleSets, "\n");
+    public void writeTo(CSSWriter writer) {
+        writer.writeSeparated(ruleSets, "\n");
     }
 }

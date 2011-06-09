@@ -25,9 +25,7 @@ package fi.evident.cissa.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import static fi.evident.cissa.utils.CollectionUtils.join;
-
-public final class RuleSet {
+public final class RuleSet extends CSSNode {
     private final List<Selector> selectors;
     private final List<Attribute> attributes;
 
@@ -37,7 +35,10 @@ public final class RuleSet {
     }
 
     @Override
-    public String toString() {
-        return join(selectors, ", ") + " { " + join(attributes, "; ") + " }";
+    void writeTo(CSSWriter writer) {
+        writer.writeSeparated(selectors, ", ");
+        writer.write(" { ");
+        writer.writeSeparated(attributes, "; ");
+        writer.write(" }");
     }
 }
