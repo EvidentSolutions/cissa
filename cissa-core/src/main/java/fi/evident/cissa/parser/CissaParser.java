@@ -113,6 +113,9 @@ public final class CissaParser {
 
                 result.add(Selector.simple(selector));
                 sb.setLength(0);
+
+                if (!lexer.nextCharacterIs(SELECTOR_START))
+                    throw lexer.parseError("selector");
             } else {
                 sb.append(lexer.read());
             }
