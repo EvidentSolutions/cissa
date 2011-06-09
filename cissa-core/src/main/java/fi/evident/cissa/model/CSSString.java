@@ -36,6 +36,13 @@ final class CSSString extends CSSValue {
 
     @Override
     void writeTo(CSSWriter writer) {
-        writer.write("\"").write(value.replace("\"", "\\\"")).write("\"");
+        writer.write('"');
+        for (int i = 0, len = value.length(); i < len; i++) {
+            char c = value.charAt(i);
+            if (c == '"')
+                writer.write('\\');
+            writer.write(c);
+        }
+        writer.write('"');
     }
 }

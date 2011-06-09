@@ -31,6 +31,11 @@ final class CSSWriter {
     private final StringBuilder sb = new StringBuilder();
     private static final String hexDigits = "0123456789abcdef";
 
+    public CSSWriter write(char c) {
+        sb.append(c);
+        return this;
+    }
+    
     public CSSWriter write(CharSequence cs) {
         Require.argumentNotNull("cs", cs);
         
