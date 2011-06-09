@@ -23,6 +23,7 @@
 package fi.evident.cissa.parser;
 
 import fi.evident.cissa.template.SourceRange;
+import fi.evident.cissa.utils.Require;
 
 final class SourceReader {
 
@@ -30,17 +31,15 @@ final class SourceReader {
     private int position = 0;
 
     SourceReader(String source) {
+        Require.argumentNotNull("source", source);
+        
         this.source = source;
     }
 
     public char read() {
-        char c = peek();
+        char c = source.charAt(position);
         position += 1;
         return c;
-    }
-
-    public char peek() {
-        return source.charAt(position);
     }
 
     public boolean hasMore() {
@@ -55,8 +54,24 @@ final class SourceReader {
         return new SourceRange(start, position, source.substring(start, position));
     }
 
-    public void skip(int length) {
-        position += length;
+    public boolean nextCharacterIs(char c) {
+        return hasMore() && source.charAt(position) == c;
+    }
+
+    public boolean nextCharacterIs(CharacterClass cc) {
+        return hasMore() && cc.contains(source.charAt(position));
+    }
+
+    public String readWhile(CharacterClass cc) {
+        StringBuilder sb = new StringBuilder();
+        while (nextCharacterIs(cc))
+            sb.append(read());
+        return sb.toString();
+    }
+
+    public void skipWhile(CharacterClass cc) {
+        while (nextCharacterIs(cc))
+            position++;
     }
 
     public int position() {

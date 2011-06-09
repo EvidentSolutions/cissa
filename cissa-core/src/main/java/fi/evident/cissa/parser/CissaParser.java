@@ -33,6 +33,9 @@ import static java.lang.Character.isLetter;
 public final class CissaParser {
 
     private final Lexer lexer;
+    private static final CharacterClass LITERAL_START = CharacterClass.noneOf("(){};!");
+    private static final CharacterClass SELECTOR_START = CharacterClass.noneOf("{}");
+    private static final CharacterClass VALUE_START = CharacterClass.noneOf(";{}!");
 
     public CissaParser(String source) {
         this.lexer = new Lexer(source);
@@ -60,10 +63,10 @@ public final class CissaParser {
 
         while (lexer.nextCharacterIs('@')) {
             String variable = lexer.parseVariable().getValue();
-            lexer.consumeToken(":");
+            lexer.assumeToken(':');
 
             ValueExpression value = parseValue();
-            lexer.consumeToken(";");
+            lexer.assumeToken(';');
 
             result.add(new VariableDefinition(variable, value));
         }
@@ -76,16 +79,16 @@ public final class CissaParser {
     private List<RuleSetTemplate> parseRuleSetTemplates() {
         List<RuleSetTemplate> result = new ArrayList<RuleSetTemplate>();
 
-        while (lexer.nextCharacterIsNot('}')) {
+        while (lexer.nextCharacterIs(SELECTOR_START)) {
             List<Selector> selectors = parseSelectors();
 
-            lexer.consumeToken("{");
+            lexer.assumeToken('{');
 
             List<VariableDefinition> bindings = parseVariableDefinitions();
             List<AttributeTemplate> attributes = parseAttributes();
             List<RuleSetTemplate> children = parseRuleSetTemplates();
 
-            lexer.consumeToken("}");
+            lexer.assumeToken('}');
 
             result.add(new RuleSetTemplate(selectors, bindings, attributes, children));
         }
@@ -101,8 +104,8 @@ public final class CissaParser {
         // TODO: idiotic implementation but with current functionality the output is identical
         // even though we don't parse the selectors properly
         StringBuilder sb = new StringBuilder();
-        while (lexer.nextCharacterIsNot('{')) {
-            if (lexer.consumeTokenIf(",")) {
+        while (lexer.nextCharacterIs(SELECTOR_START)) {
+            if (lexer.consumeTokenIf(',')) {
                 String selector = sb.toString().trim();
 
                 if (selector.isEmpty())
@@ -131,13 +134,13 @@ public final class CissaParser {
         while (isStartOfAttribute()) {
             result.add(parseAttribute());
 
-            if (lexer.consumeTokenIf(";")) {
+            if (lexer.consumeTokenIf(';')) {
             } else {
                 break;
             }
         }
 
-        while (lexer.consumeTokenIf(";")) {
+        while (lexer.consumeTokenIf(';')) {
             // nada
         }
 
@@ -152,7 +155,7 @@ public final class CissaParser {
         int position = lexer.savePosition();
         try {
             lexer.parseIdentifier();
-            lexer.consumeToken(":");
+            lexer.assumeToken(':');
 
             // We have an identifier followed by colon, which would seem to be an
             // attribute, but actually we might be in a nested rule where we colon
@@ -163,7 +166,7 @@ public final class CissaParser {
             lexer.restorePosition(position);
             try {
                 parseSelectors();
-                lexer.consumeToken("{");
+                lexer.assumeToken('{');
                 return false;
 
             } catch (ParseException e) {
@@ -181,18 +184,30 @@ public final class CissaParser {
     //      identifier ':' attributeValues '!important'?
     private AttributeTemplate parseAttribute() {
         String identifier = lexer.parseIdentifier();
-        lexer.consumeToken(":");
+        lexer.assumeToken(':');
         List<ValueExpression> values = parseValues();
-        boolean important = lexer.consumeTokenIf("!important");
+        boolean important = parseImportant();
 
         return new AttributeTemplate(identifier, values, important);
+    }
+
+    private boolean parseImportant() {
+        if (lexer.consumeTokenIf('!')) {
+            if (lexer.parseIdentifier().equals("important"))
+                return true;
+            else
+                throw lexer.parseError("important");
+        } else
+            return false;
     }
 
     private List<ValueExpression> parseValues() {
         List<ValueExpression> result = new ArrayList<ValueExpression>();
         result.add(parseValue());
-        while (lexer.nextCharacterIsNot(';') && lexer.nextCharacterIsNot('}') && lexer.nextCharacterIsNot('!'))
+
+        while (lexer.nextCharacterIs(VALUE_START))
             result.add(parseValue());
+
         return result;
     }
 
@@ -203,7 +218,7 @@ public final class CissaParser {
         if (lexer.nextCharacterIs(',')) {
             List<ValueExpression> exps = new ArrayList<ValueExpression>();
             exps.add(exp);
-            while (lexer.consumeTokenIf(","))
+            while (lexer.consumeTokenIf(','))
                 exps.add(parseExpression());
 
             return ValueExpression.list(exps);
@@ -219,11 +234,11 @@ public final class CissaParser {
 
         while (true) {
             if (lexer.nextCharacterIs('+')) {
-                SourceRange range = lexer.consumeTokenWithSource("+");
+                SourceRange range = lexer.assumeTokenWithSource('+');
                 ValueExpression t2 = parseTerm();
                 term = ValueExpression.binary(term, BinaryOperator.ADD, t2, range);
             } else if (lexer.nextCharacterIs('-')) {
-                SourceRange range = lexer.consumeTokenWithSource("-");
+                SourceRange range = lexer.assumeTokenWithSource('-');
                 ValueExpression t2 = parseTerm();
                 term = ValueExpression.binary(term, BinaryOperator.SUBTRACT, t2, range);
             } else {
@@ -241,11 +256,11 @@ public final class CissaParser {
 
         while (true) {
             if (lexer.nextCharacterIs('*')) {
-                SourceRange range = lexer.consumeTokenWithSource("*");
+                SourceRange range = lexer.assumeTokenWithSource('*');
                 ValueExpression t2 = parseFactor();
                 term = ValueExpression.binary(term, BinaryOperator.MULTIPLY, t2, range);
             } else if (lexer.nextCharacterIs('/')) {
-                SourceRange range = lexer.consumeTokenWithSource("/");
+                SourceRange range = lexer.assumeTokenWithSource('/');
                 ValueExpression t2 = parseFactor();
                 term = ValueExpression.binary(term, BinaryOperator.DIVIDE, t2, range);
             } else {
@@ -264,13 +279,13 @@ public final class CissaParser {
             return ValueExpression.variable(token.getValue(), token.getRange());
 
         } else if (lexer.nextCharacterIs('-')) {
-            SourceRange range = lexer.consumeTokenWithSource("-");
+            SourceRange range = lexer.assumeTokenWithSource('-');
             ValueExpression exp = parseFactor();
             return ValueExpression.binary(ValueExpression.ZERO, BinaryOperator.SUBTRACT, exp, range);
 
-        } else if (lexer.consumeTokenIf("(")) {
+        } else if (lexer.consumeTokenIf('(')) {
             ValueExpression exp = parseExpression();
-            lexer.consumeToken(")");
+            lexer.assumeToken(')');
             return exp;
 
         } else {
@@ -282,27 +297,27 @@ public final class CissaParser {
     // literal:
     //      number | color | string | identifier '(' args ')' | identifier
     private CSSValue parseLiteral() {
-        if (lexer.nextCharacterIsDigit()) {
+        if (lexer.nextCharacterIs(CharacterClass.DIGIT)) {
             return CSSValue.amount(lexer.parseDimension());
 
         } else if (lexer.nextCharacterIs('#')) {
             return lexer.parseHexColor();
 
-        } else if (lexer.nextCharacterIs('"') || lexer.nextCharacterIs('\'')) {
-            return CSSValue.string(lexer.readString());
+        } else if (lexer.nextCharacterIs(CharacterClass.QUOTE)) {
+            return CSSValue.string(lexer.parseString());
 
         } else {
             String id = lexer.parseIdentifier();
-            if (lexer.consumeTokenIf("(")) {
+            if (lexer.consumeTokenIf('(')) {
 
                 List<CSSValue> args = new ArrayList<CSSValue>();
-                if (lexer.nextCharacterIsNot(')')) {
+                if (lexer.nextCharacterIs(LITERAL_START)) {
                     args.add(parseLiteral());
-                    while (lexer.consumeTokenIf(","))
+                    while (lexer.consumeTokenIf(','))
                         args.add(parseLiteral());
                 }
 
-                lexer.consumeToken(")");
+                lexer.assumeToken(')');
                 return CSSValue.apply(id, args);
             } else {
                 return CSSValue.token(id);

@@ -28,8 +28,6 @@ import fi.evident.cissa.model.Dimension;
 import fi.evident.cissa.model.DimensionUnit;
 import fi.evident.cissa.template.SourceRange;
 
-import javax.swing.text.Position;
-
 import static java.lang.Character.isDigit;
 import static java.lang.Character.isLetter;
 import static java.lang.Character.isWhitespace;
@@ -38,22 +36,90 @@ import static java.lang.Math.min;
 final class Lexer {
     private final SourceReader reader;
 
+    private static final CharacterClass NOT_NEW_LINE =
+            CharacterClass.NEWLINE.complement();
+
+    private static final CharacterClass IDENTIFIER_CHAR =
+            CharacterClass.or(CharacterClass.LETTER, CharacterClass.DIGIT, CharacterClass.anyOf("-_"));
+
+    private static final CharacterClass UNIT_NAME_CHAR =
+            CharacterClass.or(CharacterClass.LETTER, CharacterClass.character('%'));
+
     public Lexer(String source) {
         this.reader = new SourceReader(source);
     }
 
     public void skipSpaces() {
         while (reader.hasMore()) {
-            if (isWhitespace(reader.peek())) {
-                reader.read();
-            } else if (consumeTokenIf("//")) {
-                consumeUntil("\n", false);
-            } else if (consumeTokenIf("/*")) {
-                consumeUntil("*/", true);
+            if (reader.nextCharacterIs(CharacterClass.WHITESPACE)) {
+                reader.skipWhile(CharacterClass.WHITESPACE);
+
+            } else if (reader.startsWith("//")) {
+                reader.skipWhile(NOT_NEW_LINE);
+
+            } else if (reader.startsWith("/*")) {
+                assume('/');
+                assume('*');
+                while (reader.hasMore() && !reader.startsWith("*/"))
+                    reader.read();
+                assume('*');
+                assume('/');
+
             } else {
                 break;
             }
         }
+    }
+
+    public Token<String> parseVariable() {
+        int start = reader.position();
+        assume('@');
+        return parseIdentifierInternal(start);
+    }
+
+    public String parseIdentifier() {
+        return parseIdentifierInternal(reader.position()).getValue();
+    }
+
+    private Token<String> parseIdentifierInternal(int start) {
+        String name = reader.readWhile(IDENTIFIER_CHAR);
+
+        SourceRange range = reader.rangeFrom(start);
+
+        skipSpaces();
+
+        if (name.isEmpty() || isDigit(name.charAt(0)))
+            throw parseError("identifier");
+
+        return new Token<String>(name, range);
+    }
+
+    public Dimension parseDimension() {
+        String num = reader.readWhile(CharacterClass.DECIMAL_NUMBER_CHAR);
+        String unitName = reader.readWhile(UNIT_NAME_CHAR);
+        skipSpaces();
+
+        DimensionUnit unit = unitName.isEmpty() ? DimensionUnit.EMPTY : DimensionUnit.forName(unitName);
+
+        return Dimension.dimension(num, unit);
+    }
+
+    public CSSValue parseHexColor() {
+        assume('#');
+        String digits = reader.readWhile(CharacterClass.HEX_DIGIT);
+        skipSpaces();
+
+        return CSSColor.parse("#" + digits);
+    }
+
+    public String parseString() {
+        char quote = reader.read();
+        if (CharacterClass.QUOTE.contains(quote)) {
+            String str = reader.readWhile(CharacterClass.character(quote).complement());
+            assumeToken(quote);
+            return str;
+        } else
+            throw parseError(quote);
     }
 
     public char read() {
@@ -61,11 +127,11 @@ final class Lexer {
     }
 
     public boolean nextCharacterIs(char c) {
-        return reader.hasMore() && reader.peek() == c;
+        return reader.nextCharacterIs(c);
     }
 
-    public boolean nextCharacterIsNot(char c) {
-        return reader.hasMore() && reader.peek() != c;
+    public boolean nextCharacterIs(CharacterClass cc) {
+        return reader.nextCharacterIs(cc);
     }
 
     public ParseException parseError(String expected) {
@@ -73,134 +139,42 @@ final class Lexer {
         return new ParseException("expected: '" + expected);
     }
 
-    private void assume(String s) {
-        if (reader.startsWith(s))
-            reader.skip(s.length());
-        else
-            throw parseError(s);
+    private ParseException parseError(char expected) {
+        return parseError(String.valueOf(expected));
     }
 
-    public boolean consumeTokenIf(String s) {
-        if (reader.startsWith(s)) {
-            reader.skip(s.length());
-            skipSpaces();
+    public boolean consumeTokenIf(char c) {
+        if (reader.nextCharacterIs(c)) {
+            assumeToken(c);
             return true;
-        } else
-            return false;
-    }
-
-    public SourceRange consumeTokenWithSource(String s) {
-        if (reader.startsWith(s)) {
-            int start = reader.position();
-            reader.skip(s.length());
-            SourceRange range = reader.rangeFrom(start);
-            skipSpaces();
-            return range;
         } else {
-            throw parseError(s);
+            return false;
         }
     }
-    
-    public void consumeToken(String s) {
-        assume(s);
+
+    public SourceRange assumeTokenWithSource(char c) {
+        int start = reader.position();
+        assume(c);
+        SourceRange range = reader.rangeFrom(start);
+        skipSpaces();
+        return range;
+    }
+
+    public void assumeToken(char c) {
+        assume(c);
         skipSpaces();
     }
 
-    private void consumeUntil(String end, boolean requireEnd) {
-        while (reader.hasMore() && !reader.startsWith(end))
-            reader.read();
-
-        if (requireEnd || reader.hasMore())
-            consumeToken(end);
+    private void assume(char c) {
+        if (reader.read() != c)
+            throw parseError(c);
     }
-
-    public String readString() {
-        String quote = (reader.peek() == '"') ? "\"" : "'";
-
-        StringBuilder sb = new StringBuilder();
-
-        assume(quote);
-        while (reader.hasMore() && !reader.startsWith(quote))
-            sb.append(reader.read());
-        consumeToken(quote);
-
-        return sb.toString();
-    }
-
-    public boolean nextCharacterIsDigit() {
-        return reader.hasMore() && isDigit(reader.peek());
-    }
-
-    private boolean nextCharacterIsHexDigit() {
-        return reader.hasMore() && "01234567890abcdefABCDEF".indexOf(reader.peek()) != -1;
-    }
-
-    private boolean nextCharacterIsLetter() {
-        return reader.hasMore() && isLetter(reader.peek());
-    }
-
+    
     public int savePosition() {
         return reader.position();
     }
 
     public void restorePosition(int position) {
         reader.restorePosition(position);
-    }
-
-    public Token<String> parseVariable() {
-        int start = reader.position();
-        assume("@");
-        return parseIdentifierInternal(start);
-    }
-
-    public String parseIdentifier() {
-        return parseIdentifierInternal(reader.position()).getValue();
-    }
-    
-    private Token<String> parseIdentifierInternal(int start) {
-        StringBuilder sb = new StringBuilder();
-
-        while (reader.hasMore() && isIdentifierChar(reader.peek()))
-            sb.append(reader.read());
-
-        SourceRange range = reader.rangeFrom(start);
-
-        skipSpaces();
-
-        String name = sb.toString();
-        if (name.isEmpty() || isDigit(name.charAt(0)))
-            throw parseError("identifier");
-
-        return new Token<String>(name, range);
-    }
-
-    private static boolean isIdentifierChar(char ch) {
-        return isLetter(ch) || isDigit(ch) || "-_".indexOf(ch) != -1;
-    }
-
-    public Dimension parseDimension() {
-        StringBuilder num = new StringBuilder();
-
-        while (reader.hasMore() && "0123456789.".indexOf(reader.peek()) != -1)
-            num.append(reader.read());
-
-        StringBuilder unitName = new StringBuilder();
-        while (nextCharacterIs('%') || nextCharacterIsLetter())
-            unitName.append(reader.read());
-
-        skipSpaces();
-
-        DimensionUnit unit = (unitName.length() != 0) ? DimensionUnit.forName(unitName.toString()) : DimensionUnit.EMPTY;
-
-        return Dimension.dimension(num.toString(), unit);
-    }
-
-    public CSSValue parseHexColor() {
-        assume("#");
-        StringBuilder sb = new StringBuilder("#");
-        while (nextCharacterIsHexDigit())
-            sb.append(reader.read());
-        skipSpaces();
-        return CSSColor.parse(sb.toString());
     }
 }
