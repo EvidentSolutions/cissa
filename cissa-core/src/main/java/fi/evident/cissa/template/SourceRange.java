@@ -22,10 +22,7 @@
 
 package fi.evident.cissa.template;
 
-import com.sun.tools.corba.se.idl.toJavaPortable.StringGen;
 import fi.evident.cissa.utils.Require;
-
-import javax.xml.stream.events.EndDocument;
 
 public final class SourceRange {
 

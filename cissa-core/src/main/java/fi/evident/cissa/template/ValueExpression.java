@@ -22,9 +22,10 @@
 
 package fi.evident.cissa.template;
 
-import fi.evident.cissa.model.*;
+import fi.evident.cissa.model.CSSValue;
+import fi.evident.cissa.model.Dimension;
+import fi.evident.cissa.model.IncompatibleUnitsException;
 
-import javax.management.ValueExp;
 import java.util.ArrayList;
 import java.util.List;
 
