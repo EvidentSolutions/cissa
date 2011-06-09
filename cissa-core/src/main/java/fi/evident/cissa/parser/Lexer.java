@@ -77,8 +77,8 @@ final class Lexer {
         return parseIdentifierInternal(start);
     }
 
-    public String parseIdentifier() {
-        return parseIdentifierInternal(reader.position()).getValue();
+    public Token<String> parseIdentifier() {
+        return parseIdentifierInternal(reader.position());
     }
 
     private Token<String> parseIdentifierInternal(int start) {

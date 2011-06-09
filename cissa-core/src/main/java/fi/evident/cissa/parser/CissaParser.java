@@ -186,7 +186,7 @@ public final class CissaParser {
     // attribute:
     //      identifier ':' attributeValues '!important'?
     private AttributeTemplate parseAttribute() {
-        String identifier = lexer.parseIdentifier();
+        String identifier = lexer.parseIdentifier().getValue();
         lexer.assumeToken(':');
         List<ValueExpression> values = parseValues();
         boolean important = parseImportant();
@@ -196,7 +196,7 @@ public final class CissaParser {
 
     private boolean parseImportant() {
         if (lexer.consumeTokenIf('!')) {
-            if (lexer.parseIdentifier().equals("important"))
+            if (lexer.parseIdentifier().getValue().equals("important"))
                 return true;
             else
                 throw lexer.parseError("important");
@@ -275,7 +275,7 @@ public final class CissaParser {
     }
 
     // factor:
-    //      variable | literal | '-' factor | '(' expression ')'
+    //      variable | '-' factor | '(' expression ')' | literalOrApply
     private ValueExpression parseFactor() {
         if (lexer.nextCharacterIs('@')) {
             Token<String> token = lexer.parseVariable();
@@ -292,38 +292,37 @@ public final class CissaParser {
             return exp;
 
         } else {
-            CSSValue literal = parseLiteral();
-            return ValueExpression.literal(literal);
+            return parseLiteralOrApply();
         }
     }
 
-    // literal:
+    // literalOrApply:
     //      number | color | string | identifier '(' args ')' | identifier
-    private CSSValue parseLiteral() {
+    private ValueExpression parseLiteralOrApply() {
         if (lexer.nextCharacterIs(CharacterClass.DIGIT)) {
-            return CSSValue.amount(lexer.parseDimension());
+            return ValueExpression.literal(CSSValue.amount(lexer.parseDimension()));
 
         } else if (lexer.nextCharacterIs('#')) {
-            return lexer.parseHexColor();
+            return ValueExpression.literal(lexer.parseHexColor());
 
         } else if (lexer.nextCharacterIs(CharacterClass.QUOTE)) {
-            return CSSValue.string(lexer.parseString());
+            return ValueExpression.literal(CSSValue.string(lexer.parseString()));
 
         } else {
-            String id = lexer.parseIdentifier();
+            Token<String> id = lexer.parseIdentifier();
             if (lexer.consumeTokenIf('(')) {
 
-                List<CSSValue> args = new ArrayList<CSSValue>();
+                List<ValueExpression> args = new ArrayList<ValueExpression>();
                 if (lexer.nextCharacterIs(LITERAL_START)) {
-                    args.add(parseLiteral());
+                    args.add(parseLiteralOrApply());
                     while (lexer.consumeTokenIf(','))
-                        args.add(parseLiteral());
+                        args.add(parseLiteralOrApply());
                 }
 
                 lexer.assumeToken(')');
-                return CSSValue.apply(id, args);
+                return ValueExpression.apply(id.getValue(), args, id.getRange());
             } else {
-                return CSSValue.token(id);
+                return ValueExpression.literal(CSSValue.token(id.getValue()));
             }
         }
     }

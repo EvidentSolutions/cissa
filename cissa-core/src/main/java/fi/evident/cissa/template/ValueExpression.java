@@ -22,11 +22,9 @@
 
 package fi.evident.cissa.template;
 
-import fi.evident.cissa.model.CSSValue;
-import fi.evident.cissa.model.Dimension;
-import fi.evident.cissa.model.IncompatibleUnitsException;
-import sun.awt.SunHints;
+import fi.evident.cissa.model.*;
 
+import javax.management.ValueExp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,5 +83,30 @@ public abstract class ValueExpression {
                 }
             }
         };
+    }
+
+    public static ValueExpression apply(final String name, final List<ValueExpression> args, final SourceRange range) {
+        final Function function = lookupFunction(name);
+
+        return new ValueExpression() {
+            @Override
+            public CSSValue evaluate(Environment env) {
+                List<CSSValue> params = new ArrayList<CSSValue>(args.size());
+                for (ValueExpression arg : args)
+                    params.add(arg.evaluate(env));
+                try {
+                    return function.apply(params);
+                } catch (Exception e) {
+                    throw new EvaluationException("error when evaluating function '" + name + "': " + e.getMessage(), range);
+                }
+            }
+        };
+    }
+
+    private static Function lookupFunction(String name) {
+        if (name.equals("rgb"))
+            return RGBFunction.INSTANCE;
+        else
+            return new BuiltinFunction(name);
     }
 }

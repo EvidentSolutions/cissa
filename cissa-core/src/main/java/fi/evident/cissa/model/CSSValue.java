@@ -41,15 +41,7 @@ public abstract class CSSValue extends CSSNode {
     }
 
     public static CSSValue apply(String name, List<CSSValue> args) {
-        // Such an ugly hack which doesn't even work if the individual arguments are expressions instead of literals.
-        if (name.equals("rgb") && args.size() == 3) {
-            int r = ((CSSAmount) args.get(0)).getValue().getValue().intValue();
-            int g = ((CSSAmount) args.get(1)).getValue().getValue().intValue();
-            int b = ((CSSAmount) args.get(2)).getValue().getValue().intValue();
-
-            return new CSSColor(r, g, b);
-        } else
-            return new CSSBuiltinApply(name, args);
+        return new CSSBuiltinApply(name, args);
     }
 
     public static CSSValue string(String s) {
