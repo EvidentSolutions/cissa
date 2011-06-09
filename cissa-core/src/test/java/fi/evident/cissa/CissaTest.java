@@ -192,9 +192,7 @@ public class CissaTest {
     }
 
     @Test
-    @Ignore
     public void supportStringsAsAttributeValues() {
-        assertThatMarkupGeneratesIdenticalCSS("[id='foo'] { width: 10pt }");
         assertThatMarkupGeneratesIdenticalCSS("[id=\"foo\"] { width: 10pt }");
     }
 
@@ -204,13 +202,21 @@ public class CissaTest {
     }
 
     @Test
-    public void supportColors() {
+    public void supportLongHashLiteralColors() {
         assertThatMarkup("h1 { color: #9fa2a4 }", generatesCSS("h1 { color: #9fa2a4 }"));
         assertThatMarkup("h1 { color: #9FA2A4 }", generatesCSS("h1 { color: #9fa2a4 }"));
         assertThatMarkup("h1 { color: #9FA2A4 }", generatesCSS("h1 { color: #9fa2a4 }"));
+    }
 
+    @Test
+    public void supportShortHashLiteralColors() {
         assertThatMarkup("h1 { color: #abc }", generatesCSS("h1 { color: #aabbcc }"));
-        //assertThatMarkup("h1 { color: rgb(0, 0, 0) }", generatesCSS("h1 { color: #000000 }"));
+    }
+
+    @Test
+    @Ignore
+    public void supportsRGBColorLiteral() {
+        assertThatMarkup("h1 { color: rgb(0, 0, 0) }", generatesCSS("h1 { color: #000000 }"));
     }
 
     @Test
