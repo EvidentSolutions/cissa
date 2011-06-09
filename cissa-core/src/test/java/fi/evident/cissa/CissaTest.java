@@ -240,6 +240,11 @@ public class CissaTest {
     }
 
     @Test
+    public void nestedRulesWithColonSelectorsAreHandledCorrectly() {
+        assertThatMarkup("h1 { foo:hover { color: red } }", generatesCSS("h1 foo:hover { color: red }"));
+    }
+
+    @Test
     public void evaluationErrorsProduceEvaluationException() {
         assertThatMarkupGeneratesEvaluationException("h1 { width: 1px + 2pt }");
         assertThatMarkupGeneratesEvaluationException("h1 { width: @foo }");

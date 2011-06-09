@@ -153,7 +153,22 @@ public final class CissaParser {
         try {
             lexer.parseIdentifier();
             lexer.consumeToken(":");
-            return true;
+
+            // We have an identifier followed by colon, which would seem to be an
+            // attribute, but actually we might be in a nested rule where we colon
+            // in the selector (such as "foo:hover { ... }"). Therefore, we'll go
+            // back to the start and try to parse this as selector followed by block.
+            // Only if that fails, we have an identifier. Phew..
+
+            lexer.restorePosition(position);
+            try {
+                parseSelectors();
+                lexer.consumeToken("{");
+                return false;
+
+            } catch (ParseException e) {
+                return true;
+            }
 
         } catch (ParseException e) {
             return false;
