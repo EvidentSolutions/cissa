@@ -33,6 +33,8 @@ public final class Attribute extends CSSNode {
     private final boolean important;
 
     public Attribute(String name, boolean important) {
+        Require.argumentNotNull("name", name);
+        
         this.name = name;
         this.important = important;
     }

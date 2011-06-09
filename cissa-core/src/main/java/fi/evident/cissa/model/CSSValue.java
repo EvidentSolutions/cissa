@@ -55,6 +55,9 @@ final class CSSBuiltinApply extends CSSValue {
     private final List<CSSValue> args;
 
     CSSBuiltinApply(String name, List<CSSValue> args) {
+        Require.argumentNotNull("name", name);
+        Require.argumentNotNull("args", args);
+
         this.name = name;
         this.args = args;
     }

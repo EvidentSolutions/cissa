@@ -30,6 +30,8 @@ public final class DimensionUnit {
     private final String name;
 
     private DimensionUnit(String name) {
+        Require.argumentNotNull("name", name);
+
         this.name = name;
     }
 

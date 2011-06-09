@@ -22,11 +22,15 @@
 
 package fi.evident.cissa.model;
 
+import fi.evident.cissa.utils.Require;
+
 final class CSSString extends CSSValue {
 
     private final String value;
 
     CSSString(String value) {
+        Require.argumentNotNull("value", value);
+        
         this.value = value;
     }
 

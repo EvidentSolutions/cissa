@@ -22,6 +22,8 @@
 
 package fi.evident.cissa.model;
 
+import fi.evident.cissa.utils.Require;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,6 +31,8 @@ final class CSSWriter {
     private final StringBuilder sb = new StringBuilder();
 
     public CSSWriter write(CharSequence cs) {
+        Require.argumentNotNull("cs", cs);
+        
         sb.append(cs);
         return this;
     }
@@ -42,13 +46,13 @@ final class CSSWriter {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return sb.toString();
-    }
-
     public void writeAll(Iterable<String> ss) {
         for (String s : ss)
             write(s);
+    }
+
+    @Override
+    public String toString() {
+        return sb.toString();
     }
 }
