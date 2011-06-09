@@ -29,6 +29,7 @@ import java.util.List;
 
 final class CSSWriter {
     private final StringBuilder sb = new StringBuilder();
+    private static final String hexDigits = "0123456789abcdef";
 
     public CSSWriter write(CharSequence cs) {
         Require.argumentNotNull("cs", cs);
@@ -43,6 +44,11 @@ final class CSSWriter {
             if (it.hasNext())
                 write(separator);
         }
+        return this;
+    }
+
+    public CSSWriter writeHexByte(int b) {
+        sb.append(hexDigits.charAt((b >> 4) & 15)).append(hexDigits.charAt(b & 15));
         return this;
     }
 

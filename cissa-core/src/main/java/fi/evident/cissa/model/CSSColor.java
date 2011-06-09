@@ -22,7 +22,6 @@
 
 package fi.evident.cissa.model;
 
-import static fi.evident.cissa.utils.HexUtils.hexify;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -58,7 +57,7 @@ public final class CSSColor extends CSSValue {
 
     @Override
     void writeTo(CSSWriter writer) {
-        writer.write("#").write(hexify(clamp(r), clamp(g), clamp(b)));
+        writer.write("#").writeHexByte(clamp(r)).writeHexByte(clamp(g)).writeHexByte(clamp(b));
     }
 
     private static int clamp(int c) {
