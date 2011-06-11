@@ -41,7 +41,6 @@ abstract class CharacterClass {
     public static final CharacterClass DIGIT = anyOf("0123456789");
     public static final CharacterClass QUOTE = anyOf("\"'");
     public static final CharacterClass NEWLINE = anyOf("\n\r");
-    public static final CharacterClass OPENING_BRACE = character('{');
 
     public static final CharacterClass LETTER = new CharacterClass() {
         @Override
@@ -68,7 +67,7 @@ abstract class CharacterClass {
                 return members.indexOf(c) != -1;
             }
         };
-    };
+    }
 
     public static CharacterClass character(final char ch) {
         return new CharacterClass() {
@@ -77,7 +76,7 @@ abstract class CharacterClass {
                 return c == ch;
             }
         };
-    };
+    }
 
     public static CharacterClass or(final CharacterClass... ccs) {
         return new CharacterClass() {
