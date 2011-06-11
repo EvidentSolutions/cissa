@@ -95,6 +95,6 @@ public final class CSSColor extends CSSValue {
 
     @Override
     public int hashCode() {
-        return (int) (((r * 79) + g) * 7 + b);
+        return (int) (((r * 79) + g) * 79 + b);
     }
 }
