@@ -22,9 +22,10 @@
 
 package fi.evident.cissa.model;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 public class CSSColorTest {
@@ -33,9 +34,9 @@ public class CSSColorTest {
     public void constructorParametersAreSavedToFields() {
         CSSColor color = new CSSColor(42, 123, 54);
 
-        assertThat(color.r, is(42));
-        assertThat(color.g, is(123));
-        assertThat(color.b, is(54));
+        assertThat(color.getR(), is(42));
+        assertThat(color.getG(), is(123));
+        assertThat(color.getB(), is(54));
     }
 
     @Test
@@ -52,9 +53,9 @@ public class CSSColorTest {
 
         CSSColor color3 = color1.add(color2);
 
-        assertThat(color3.r, is(4));
-        assertThat(color3.g, is(135));
-        assertThat(color3.b, is(242));
+        assertThat(color3.getR(), is(4));
+        assertThat(color3.getG(), is(135));
+        assertThat(color3.getB(), is(242));
     }
 
     @Test
@@ -64,9 +65,9 @@ public class CSSColorTest {
 
         CSSColor color3 = color1.add(color2);
         
-        assertThat(color3.r, is(4));
-        assertThat(color3.g, is(135));
-        assertThat(color3.b, is(342));
+        assertThat(color3.getR(), is(4));
+        assertThat(color3.getG(), is(135));
+        assertThat(color3.getB(), is(342));
     }
 
     @Test
@@ -80,17 +81,34 @@ public class CSSColorTest {
     public void colorsCanBeParsedFromLongHexRepresentation() {
         CSSColor color = CSSColor.parse("#2a7b36");
 
-        assertThat(color.r, is(42));
-        assertThat(color.g, is(123));
-        assertThat(color.b, is(54));
+        assertThat(color.getR(), is(42));
+        assertThat(color.getG(), is(123));
+        assertThat(color.getB(), is(54));
     }
 
     @Test
     public void colorsCanBeParsedFromShortHexRepresentation() {
         CSSColor color = CSSColor.parse("#2f8");
 
-        assertThat(color.r, is(34));
-        assertThat(color.g, is(255));
-        assertThat(color.b, is(136));
+        assertThat(color.getR(), is(34));
+        assertThat(color.getG(), is(255));
+        assertThat(color.getB(), is(136));
+    }
+
+    @Test
+    public void colorsImplementEquality() {
+        CSSColor color1 = new CSSColor(42, 52, 20.4);
+
+        assertThat(color1, is(equalTo(new CSSColor(42, 52, 20.4))));
+        assertThat(color1, is(not(equalTo(new CSSColor(42, 52, 20.3)))));
+        assertThat(color1, is(not(equalTo(null))));
+    }
+
+    @Test
+    public void colorsImplementHashCode() {
+        CSSColor color1 = new CSSColor(42, 52, 20.4);
+        CSSColor color2 = new CSSColor(42, 52, 20.4);
+
+        assertThat(color1.hashCode(), is(color2.hashCode()));
     }
 }

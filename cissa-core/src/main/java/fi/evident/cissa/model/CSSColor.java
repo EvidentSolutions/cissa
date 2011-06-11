@@ -27,18 +27,30 @@ import static java.lang.Math.min;
 
 public final class CSSColor extends CSSValue {
 
-    public final int r;
-    public final int g;
-    public final int b;
+    private final double r;
+    private final double g;
+    private final double b;
 
-    public CSSColor(int r, int g, int b) {
+    public CSSColor(double r, double g, double b) {
         this.r = r;
         this.g = g;
         this.b = b;
     }
 
+    public int getR() {
+        return (int) r;
+    }
+
+    public int getG() {
+        return (int) g;
+    }
+
+    public int getB() {
+        return (int) b;
+    }
+
     public CSSColor add(CSSColor c) {
-        return new CSSColor(r+c.r, g+c.g, b+c.b);
+        return new CSSColor(r + c.r, g + c.g, b + c.b);
     }
 
     public static CSSColor parse(String s) {
@@ -57,10 +69,28 @@ public final class CSSColor extends CSSValue {
 
     @Override
     void writeTo(CSSWriter writer) {
-        writer.write("#").writeHexByte(clamp(r)).writeHexByte(clamp(g)).writeHexByte(clamp(b));
+        writer.write("#").writeHexByte(clamp(getR())).writeHexByte(clamp(getG())).writeHexByte(clamp(getB()));
     }
 
     private static int clamp(int c) {
         return min(max(c, 0), 255);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o instanceof CSSColor) {
+            CSSColor c = (CSSColor) o;
+
+            return r == c.r && g == c.g && b == c.b;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (((r * 79) + g) * 7 + b);
     }
 }

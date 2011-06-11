@@ -40,9 +40,9 @@ public class RGBFunctionTest {
     @Test
     public void callWithProperArgumentsProducesColor() {
         CSSColor color = func.apply(asList(intAmount(42), intAmount(56), intAmount(125)));
-        assertThat(color.r, is(42));
-        assertThat(color.g, is(56));
-        assertThat(color.b, is(125));
+        assertThat(color.getR(), is(42));
+        assertThat(color.getG(), is(56));
+        assertThat(color.getB(), is(125));
     }
 
     @Test(expected = IllegalArgumentException.class)
