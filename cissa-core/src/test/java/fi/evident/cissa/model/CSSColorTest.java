@@ -50,11 +50,7 @@ public class CSSColorTest {
         CSSColor color1 = new CSSColor(0, 100, 200);
         CSSColor color2 = new CSSColor(4, 35, 42);
 
-        CSSColor color3 = color1.add(color2);
-
-        assertThat(color3.getR(), is(4));
-        assertThat(color3.getG(), is(135));
-        assertThat(color3.getB(), is(242));
+        assertThat(color1.add(color2), is(new CSSColor(4, 135, 242)));
     }
 
     @Test
@@ -62,11 +58,7 @@ public class CSSColorTest {
         CSSColor color1 = new CSSColor(0, 100, 200);
         CSSColor color2 = new CSSColor(4, 35, 142);
 
-        CSSColor color3 = color1.add(color2);
-        
-        assertThat(color3.getR(), is(4));
-        assertThat(color3.getG(), is(135));
-        assertThat(color3.getB(), is(342));
+        assertThat(color1.add(color2), is(new CSSColor(4, 135, 342)));
     }
 
     @Test
@@ -80,18 +72,14 @@ public class CSSColorTest {
     public void colorsCanBeParsedFromLongHexRepresentation() {
         CSSColor color = CSSColor.parse("#2a7b36");
 
-        assertThat(color.getR(), is(42));
-        assertThat(color.getG(), is(123));
-        assertThat(color.getB(), is(54));
+        assertThat(color, is(new CSSColor(42, 123, 54)));
     }
 
     @Test
     public void colorsCanBeParsedFromShortHexRepresentation() {
         CSSColor color = CSSColor.parse("#2f8");
 
-        assertThat(color.getR(), is(34));
-        assertThat(color.getG(), is(255));
-        assertThat(color.getB(), is(136));
+        assertThat(color, is(new CSSColor(34, 255, 136)));
     }
 
     @Test
