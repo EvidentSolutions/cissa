@@ -275,6 +275,17 @@ public class CissaTest {
         assertThatMarkupGeneratesEvaluationExceptionWhereRange("h1 { width: 42 / 0 }", isRange(15, 16, "/"));
     }
 
+    @Test
+    public void colorsCanBeMultipliedByScalars() {
+        assertThatMarkup("h1 { color: #112233 * 2 }", generatesCSS("h1 { color: #224466 }"));
+        assertThatMarkup("h1 { color: 2 * #112233 }", generatesCSS("h1 { color: #224466 }"));
+    }
+
+    @Test
+    public void colorCantBeMultipliedByDimensionWithUnit() {
+        assertThatMarkupGeneratesEvaluationException("h1 { color: #112233 * 2px }");
+    }
+
     // support detecting overflow
     // support nested comments
     // support value functions

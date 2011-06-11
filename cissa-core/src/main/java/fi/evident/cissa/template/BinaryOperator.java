@@ -69,6 +69,18 @@ public enum BinaryOperator {
             return evaluateAmounts((CSSAmount) left, (CSSAmount) right);
         else if (left instanceof CSSColor && right instanceof CSSColor)
             return evaluateColors((CSSColor) left, (CSSColor) right);
+        else if (left instanceof CSSColor && right instanceof CSSAmount && this == MULTIPLY)
+            return multiplyColor((CSSColor) left, (CSSAmount) right);
+        else if (left instanceof CSSAmount && right instanceof CSSColor && this == MULTIPLY)
+            return multiplyColor((CSSColor) right, (CSSAmount) left);
+        else
+            throw new IncompatibleUnitsException();
+    }
+
+    private static CSSValue multiplyColor(CSSColor color, CSSAmount scalar) {
+        Dimension value = scalar.getValue();
+        if (value.getUnit() == DimensionUnit.EMPTY)
+            return color.multiply(value.getValue().doubleValue());
         else
             throw new IncompatibleUnitsException();
     }
