@@ -22,7 +22,6 @@
 
 package fi.evident.cissa.model;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -110,5 +109,12 @@ public class CSSColorTest {
         CSSColor color2 = new CSSColor(42, 52, 20.4);
 
         assertThat(color1.hashCode(), is(color2.hashCode()));
+    }
+
+    @Test
+    public void colorsCanBeMultipliedByScalars() {
+        CSSColor color = new CSSColor(15, 60, 42);
+
+        assertThat(color.multiply(2.2), is(new CSSColor(33, 132, 92.4)));
     }
 }

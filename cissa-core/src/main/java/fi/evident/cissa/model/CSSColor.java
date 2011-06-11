@@ -53,6 +53,10 @@ public final class CSSColor extends CSSValue {
         return new CSSColor(r + c.r, g + c.g, b + c.b);
     }
 
+    public CSSColor multiply(double s) {
+        return new CSSColor(s * r, s * g, s * b);
+    }
+
     public static CSSColor parse(String s) {
         int rgb = Integer.parseInt(normalize(s), 16);
         return new CSSColor((rgb >> 16) & 0xff, (rgb >> 8) & 0xff, rgb & 0xff);
