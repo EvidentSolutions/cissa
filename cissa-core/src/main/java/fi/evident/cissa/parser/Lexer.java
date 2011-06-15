@@ -137,8 +137,7 @@ final class Lexer {
     }
 
     public ParseException parseError(String expected) {
-        // TODO: add a location of the source
-        return new ParseException("expected: '" + expected);
+        return new ParseException("expected: '" + expected + "' at " + reader.position());
     }
 
     private ParseException parseError(char expected) {
