@@ -30,16 +30,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static fi.evident.cissa.parser.Lexer.VARIABLE_PREFIX;
+import static fi.evident.cissa.parser.SelectorParser.SELECTOR_START;
 
 public final class CissaParser {
 
     private final Lexer lexer;
+    private final SelectorParser selectorParser;
     private static final CharacterClass LITERAL_START = CharacterClass.noneOf("(){};!");
-    private static final CharacterClass SELECTOR_START = CharacterClass.noneOf("{}");
     private static final CharacterClass VALUE_START = CharacterClass.noneOf(";{}!");
 
     public CissaParser(String source) {
         this.lexer = new Lexer(source);
+        this.selectorParser = new SelectorParser(lexer);
     }
 
     public static DocumentTemplate parse(String s) {
@@ -81,7 +83,7 @@ public final class CissaParser {
         List<RuleSetTemplate> result = new ArrayList<RuleSetTemplate>();
 
         while (lexer.nextCharacterIs(SELECTOR_START)) {
-            List<Selector> selectors = parseSelectors();
+            List<Selector> selectors = selectorParser.parseSelectors();
 
             lexer.assumeToken('{');
 
@@ -93,38 +95,6 @@ public final class CissaParser {
 
             result.add(new RuleSetTemplate(selectors, bindings, attributes, children));
         }
-
-        return result;
-    }
-
-    // selectors:
-    //      selector (',' selector)*
-    private List<Selector> parseSelectors() {
-        List<Selector> result = new ArrayList<Selector>();
-
-        // TODO: idiotic implementation but with current functionality the output is identical
-        // even though we don't parse the selectors properly
-        StringBuilder sb = new StringBuilder();
-        while (lexer.nextCharacterIs(SELECTOR_START)) {
-            if (lexer.consumeTokenIf(',')) {
-                String selector = sb.toString().trim();
-
-                if (selector.isEmpty())
-                    throw lexer.parseError("selector");
-
-                result.add(Selector.simple(selector));
-                sb.setLength(0);
-
-                if (!lexer.nextCharacterIs(SELECTOR_START))
-                    throw lexer.parseError("selector");
-            } else {
-                sb.append(lexer.read());
-            }
-        }
-
-        String selector = sb.toString().trim();
-        if (!selector.isEmpty())
-            result.add(Selector.simple(selector));
 
         return result;
     }
@@ -169,7 +139,7 @@ public final class CissaParser {
 
             lexer.restorePosition(position);
             try {
-                parseSelectors();
+                selectorParser.parseSelectors();
                 lexer.assumeToken('{');
                 return false;
 

@@ -22,6 +22,7 @@
 
 package fi.evident.cissa.parser;
 
+import fi.evident.cissa.template.DocumentTemplate;
 import org.junit.Test;
 
 import static org.junit.Assert.fail;
@@ -33,17 +34,10 @@ public class CissaParserTest {
         assertThatMarkupGeneratesParseFailure("h1 { margin: 1 2 3 4 !importants }");
     }
 
-    @Test
-    public void invalidSelectors() {
-        assertThatMarkupGeneratesParseFailure("foo, { }");
-        assertThatMarkupGeneratesParseFailure(", { }");
-        assertThatMarkupGeneratesParseFailure(", foo { }");
-    }
-
     private static void assertThatMarkupGeneratesParseFailure(String markup) {
         try {
-            CissaParser.parse(markup);
-            fail("Expected ParserException for markup '" + markup + "'");
+            DocumentTemplate template = CissaParser.parse(markup);
+            fail("Expected ParserException for markup '" + markup + "', got '" + template + "'");
         } catch (ParseException e) {
         }
     }

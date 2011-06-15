@@ -25,17 +25,23 @@ package fi.evident.cissa.model;
 import fi.evident.cissa.utils.Require;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableList;
 
 public abstract class Selector extends CSSNode {
 
-    public static Selector simple(String selector) {
-        return simple(selector, Collections.<String>emptyList());
+    public static Selector simple(String selector, String... specs) {
+        return simple(selector, asList(specs));
     }
 
     public static Selector simple(String selector, List<String> specs) {
         return new SimpleSelector(selector, specs);
+    }
+
+    public static Selector compound(Selector left, Selector right) {
+        return compound(left, "", right);
     }
 
     public static Selector compound(Selector left, String combinator, Selector right) {
@@ -51,12 +57,31 @@ final class SimpleSelector extends Selector {
         Require.argumentNotNull("elementName", elementName);
 
         this.elementName = elementName;
-        this.specs = new ArrayList<String>(specs);
+        this.specs = unmodifiableList(new ArrayList<String>(specs));
     }
 
     @Override
     void writeTo(CSSWriter writer) {
         writer.write(elementName).writeAll(specs);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o instanceof SimpleSelector) {
+            SimpleSelector rhs = (SimpleSelector) o;
+
+            return elementName.equals(rhs.elementName)
+                && specs.equals(rhs.specs);
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return elementName.hashCode() * 79 + specs.hashCode();
     }
 }
 
@@ -84,5 +109,25 @@ final class CompoundSelector extends Selector {
             writer.write(combinator).write(" ");
 
         right.writeTo(writer);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o instanceof CompoundSelector) {
+            CompoundSelector rhs = (CompoundSelector) o;
+
+            return combinator.equals(rhs.combinator)
+                && left.equals(rhs.left)
+                && right.equals(rhs.right);
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return (left.hashCode() * 79 + combinator.hashCode()) * 79 + right.hashCode();
     }
 }

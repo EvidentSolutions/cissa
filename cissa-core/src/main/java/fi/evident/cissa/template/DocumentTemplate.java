@@ -52,4 +52,9 @@ public final class DocumentTemplate {
 
         return doc;
     }
+
+    @Override
+    public String toString() {
+        return "DocumentTemplate [variables=" + variables + ", ruleSets=" + ruleSets + "]";
+    }
 }
