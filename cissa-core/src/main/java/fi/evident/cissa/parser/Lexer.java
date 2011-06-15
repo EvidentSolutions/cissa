@@ -122,7 +122,10 @@ final class Lexer {
     }
 
     public char read() {
-        return reader.read();
+        if (reader.hasMore())
+            return reader.read();
+        else
+            throw parseError("unexpected eof");
     }
 
     public boolean nextCharacterIs(char c) {
@@ -165,7 +168,7 @@ final class Lexer {
     }
 
     private void assume(char c) {
-        if (reader.read() != c)
+        if (read() != c)
             throw parseError(c);
     }
     
