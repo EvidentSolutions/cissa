@@ -27,6 +27,7 @@ import fi.evident.cissa.template.EvaluationException;
 import fi.evident.cissa.template.SourceRange;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -284,6 +285,24 @@ public class CissaTest {
     @Test
     public void colorCantBeMultipliedByDimensionWithUnit() {
         assertThatMarkupGeneratesEvaluationException("h1 { color: #112233 * 2px }");
+    }
+
+    @Test
+    @Ignore("unimplemented SASS feature")
+    public void parentSelectorReferences() {
+        assertThatMarkup("a { color: blue; &:hover { color: red } }",
+                generatesCSS("a { color: blue }\n" +
+                             "a:hover { color:red }"));
+
+        assertThatMarkup(".foo { .bar & .baz: { color: red } }",
+                generatesCSS(".bar .foo .baz { color: red }"));
+    }
+
+    @Test
+    @Ignore("unimplemented SASS feature")
+    public void nestedProperties() {
+        assertThatMarkup(".foo { font: { family: bar, size: 10pt } }",
+                generatesCSS(".foo { font-family: bar, font-size: 10pt }"));
     }
 
     // support detecting overflow
