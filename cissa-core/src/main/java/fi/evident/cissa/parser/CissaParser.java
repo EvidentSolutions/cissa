@@ -22,13 +22,14 @@
 
 package fi.evident.cissa.parser;
 
-import fi.evident.cissa.model.*;
+import fi.evident.cissa.model.CSSValue;
+import fi.evident.cissa.model.Selector;
 import fi.evident.cissa.template.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Character.isLetter;
+import static fi.evident.cissa.parser.Lexer.VARIABLE_PREFIX;
 
 public final class CissaParser {
 
@@ -61,7 +62,7 @@ public final class CissaParser {
     private List<VariableDefinition> parseVariableDefinitions() {
         List<VariableDefinition> result = new ArrayList<VariableDefinition>();
 
-        while (lexer.nextCharacterIs('@')) {
+        while (lexer.nextCharacterIs(VARIABLE_PREFIX)) {
             String variable = lexer.parseVariable().getValue();
             lexer.assumeToken(':');
 
@@ -277,7 +278,7 @@ public final class CissaParser {
     // factor:
     //      variable | '-' factor | '(' expression ')' | literalOrApply
     private ValueExpression parseFactor() {
-        if (lexer.nextCharacterIs('@')) {
+        if (lexer.nextCharacterIs(VARIABLE_PREFIX)) {
             Token<String> token = lexer.parseVariable();
             return ValueExpression.variable(token.getValue(), token.getRange());
 

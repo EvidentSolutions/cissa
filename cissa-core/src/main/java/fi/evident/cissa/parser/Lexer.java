@@ -29,9 +29,6 @@ import fi.evident.cissa.model.DimensionUnit;
 import fi.evident.cissa.template.SourceRange;
 
 import static java.lang.Character.isDigit;
-import static java.lang.Character.isLetter;
-import static java.lang.Character.isWhitespace;
-import static java.lang.Math.min;
 
 final class Lexer {
     private final SourceReader reader;
@@ -44,6 +41,8 @@ final class Lexer {
 
     private static final CharacterClass UNIT_NAME_CHAR =
             CharacterClass.or(CharacterClass.LETTER, CharacterClass.character('%'));
+
+    public static final char VARIABLE_PREFIX = '$';
 
     public Lexer(String source) {
         this.reader = new SourceReader(source);
@@ -73,7 +72,7 @@ final class Lexer {
 
     public Token<String> parseVariable() {
         int start = reader.position();
-        assume('@');
+        assume(VARIABLE_PREFIX);
         return parseIdentifierInternal(start);
     }
 

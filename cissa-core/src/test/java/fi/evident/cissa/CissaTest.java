@@ -52,13 +52,13 @@ public class CissaTest {
 
     @Test
     public void supportVariables() {
-        assertThatMarkup("h1 { @myColor: blue; color: @myColor; }", generatesCSS("h1 { color: blue }"));
-        assertThatMarkup("h1 { @x: 2pt; @y: @x; font-size: @y; }", generatesCSS("h1 { font-size: 2pt }"));
+        assertThatMarkup("h1 { $myColor: blue; color: $myColor; }", generatesCSS("h1 { color: blue }"));
+        assertThatMarkup("h1 { $x: 2pt; $y: $x; font-size: $y; }", generatesCSS("h1 { font-size: 2pt }"));
     }
 
     @Test
     public void supportGlobalVariables() {
-        assertThatMarkup("@foo: 42px; h1 { width: @foo }", generatesCSS("h1 { width: 42px }"));
+        assertThatMarkup("$foo: 42px; h1 { width: $foo }", generatesCSS("h1 { width: 42px }"));
     }
 
     @Test
@@ -94,12 +94,12 @@ public class CissaTest {
 
     @Test
     public void localVariablesShouldShadowGlobals() {
-        assertThatMarkup("@foo: 12px; h1 { @foo: 13px; width: @foo }", generatesCSS("h1 { width: 13px }"));
+        assertThatMarkup("$foo: 12px; h1 { $foo: 13px; width: $foo }", generatesCSS("h1 { width: 13px }"));
     }
 
     @Test
     public void outerVariableIsInScopeForInitializationOfLocalVariable() {
-        assertThatMarkup("@foo: 12px; h1 { @foo: @foo+2; width: @foo }", generatesCSS("h1 { width: 14px }"));
+        assertThatMarkup("$foo: 12px; h1 { $foo: $foo+2; width: $foo }", generatesCSS("h1 { width: 14px }"));
     }
 
     @Test
@@ -257,12 +257,12 @@ public class CissaTest {
     @Test
     public void evaluationErrorsProduceEvaluationException() {
         assertThatMarkupGeneratesEvaluationException("h1 { width: 1px + 2pt }");
-        assertThatMarkupGeneratesEvaluationException("h1 { width: @foo }");
+        assertThatMarkupGeneratesEvaluationException("h1 { width: $foo }");
     }
 
     @Test
     public void unboundVariableErrorsKnowTheirSourceLocation() {
-        assertThatMarkupGeneratesEvaluationExceptionWhereRange("h1 { width: @foo }", isRange(12, 16, "@foo"));
+        assertThatMarkupGeneratesEvaluationExceptionWhereRange("h1 { width: $foo }", isRange(12, 16, "$foo"));
     }
 
     @Test
