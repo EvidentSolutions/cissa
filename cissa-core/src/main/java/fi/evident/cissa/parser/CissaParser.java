@@ -39,7 +39,7 @@ public final class CissaParser {
     private static final CharacterClass LITERAL_START = CharacterClass.noneOf("(){};!");
     private static final CharacterClass VALUE_START = CharacterClass.noneOf(";{}!");
 
-    public CissaParser(String source) {
+    private CissaParser(String source) {
         this.lexer = new Lexer(source);
         this.selectorParser = new SelectorParser(lexer);
     }

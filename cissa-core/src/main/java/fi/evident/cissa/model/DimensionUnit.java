@@ -36,14 +36,14 @@ public final class DimensionUnit {
     }
 
     public DimensionUnit add(DimensionUnit unit) {
-        return mergeAdditive("+", unit);
+        return mergeAdditive(unit);
     }
 
     public DimensionUnit subtract(DimensionUnit unit) {
-        return mergeAdditive("-", unit);
+        return mergeAdditive(unit);
     }
 
-    private DimensionUnit mergeAdditive(String op, DimensionUnit unit) {
+    private DimensionUnit mergeAdditive(DimensionUnit unit) {
         Require.argumentNotNull("unit", unit);
 
         if (this == EMPTY || this.equals(unit)) return unit;

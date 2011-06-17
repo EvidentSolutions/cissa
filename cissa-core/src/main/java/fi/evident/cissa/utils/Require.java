@@ -40,7 +40,7 @@ public final class Require {
             throw new IllegalArgumentException("empty value for argument '" + name + "'");
     }
 
-    public static void argumentNotNullOrEmpty(String name, Collection value) {
+    public static void argumentNotNullOrEmpty(String name, Collection<?> value) {
         argumentNotNull(name, value);
 
         if (value.isEmpty())

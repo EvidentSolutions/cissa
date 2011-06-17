@@ -44,7 +44,7 @@ final class Lexer {
 
     public static final char VARIABLE_PREFIX = '$';
 
-    public Lexer(String source) {
+    Lexer(String source) {
         this.reader = new SourceReader(source);
     }
 

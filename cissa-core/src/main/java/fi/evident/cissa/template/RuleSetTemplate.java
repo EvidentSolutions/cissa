@@ -76,7 +76,7 @@ public final class RuleSetTemplate {
             this.selectors = new ArrayList<Selector>();
         }
 
-        SelectorSet(List<Selector> selectors) {
+        private SelectorSet(List<Selector> selectors) {
             this.selectors = selectors;
         }
 
