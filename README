@@ -77,3 +77,11 @@ make sure that you use compatible units.
     left: $leftColumnWidth + $defaultPadding;
     color: $myColor + #111111;
   }
+
+Cissa vs. Sass
+==============
+
+Originally by accident, later by design, Cissa is compatible with a large subset of
+the .scss-syntax of Sass (http://sass-lang.com/). Thus you can mostly consider Cissa
+as an implementation of Sass for Java environments. At least you get to take advantage
+of editor support for Sass when writing Cissa markup.
