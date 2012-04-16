@@ -28,7 +28,7 @@ makes it hard to see the structure of the file and to make changes.
 
 Cissa lets you nest rule-sets inside other rule-sets:
 
-    :::css
+    :::scss
     .foo {
       rules
 
@@ -47,7 +47,7 @@ Variables
 Often you need to refer to the same thing in multiple different rules. Cissa let's you
 define variables in any scope. The variables are visible to all nested scopes.
 
-    :::css
+    :::scss
     $favoriteColor: green;
 
     .foo {
@@ -71,7 +71,7 @@ Expressions
 You can use arithmetic expressions when computing values of properties. Cissa will
 make sure that you use compatible units.
 
-    :::css
+    :::scss
     $leftColumnWidth: 300px;
     $defaultPadding: 10px;
     $myColor: #442485;
