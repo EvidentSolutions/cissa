@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>cissa-servlet</artifactId>
+    <name>Cissa servlet</name>
 
     <dependencies>
         <dependency>
