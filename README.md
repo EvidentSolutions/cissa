@@ -118,5 +118,5 @@ To use the servlet in your web application, add the following instead:
 Attributions
 ============
 
-Image of cat used on the website is by [Joaquim Alves Gaspar](http://commons.wikimedia.org/wiki/User:Alvesgaspar)
+Image of cat used on the website is by [Joaquim Alves Gaspar](http://tinyurl.com/alvesgaspar)
 and is used by [CC BY-SA 3.0](http://creativecommons.org/licenses/by-sa/3.0/).
