@@ -115,3 +115,8 @@ To use the servlet in your web application, add the following instead:
         <version>0.5.0</version>
     </dependency>
 
+Attributions
+============
+
+Image of cat used on the website is by [Joaquim Alves Gaspar](http://commons.wikimedia.org/wiki/User:Alvesgaspar)
+and is used by [CC BY-SA 3.0](http://creativecommons.org/licenses/by-sa/3.0/).
