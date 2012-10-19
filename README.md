@@ -99,7 +99,7 @@ Using Cissa with Maven
 Cissa is available on the central Maven repository, so just add the following
 dependency to your pom.xml to use the programmatic interface:
 
-    :xml
+    :::xml
     <dependency>
         <groupId>fi.evident.cissa</groupId>
         <artifactId>cissa-core</artifactId>
@@ -108,7 +108,7 @@ dependency to your pom.xml to use the programmatic interface:
 
 To use the servlet in your web application, add the following instead:
 
-    :xml
+    :::xml
     <dependency>
         <groupId>fi.evident.cissa</groupId>
         <artifactId>cissa-servlet</artifactId>
