@@ -92,3 +92,26 @@ Originally by accident, later by design, Cissa is compatible with a large subset
 the .scss-syntax of [Sass](http://sass-lang.com/). Thus you can mostly consider Cissa
 as an implementation of Sass for Java environments. At least you get to take advantage
 of editor support for Sass when writing Cissa markup.
+
+Using Cissa with Maven
+======================
+
+Cissa is available on the central Maven repository, so just add the following
+dependency to your pom.xml to use the programmatic interface:
+
+    :xml
+    <dependency>
+        <groupId>fi.evident.cissa</groupId>
+        <artifactId>cissa-core</artifactId>
+        <version>0.5.0</version>
+    </dependency>
+
+To use the servlet in your web application, add the following instead:
+
+    :xml
+    <dependency>
+        <groupId>fi.evident.cissa</groupId>
+        <artifactId>cissa-servlet</artifactId>
+        <version>0.5.0</version>
+    </dependency>
+
