@@ -5,6 +5,8 @@ Cissa is a simple CSS-preprocessor. Any valid CSS-file is in itself valid Cissa-
 but Cissa provides some additional features on top of CSS. The features are briefly
 introduced here, but see [cissa-core/src/test/java/fi/evident/cissa/CissaTest.java](https://bitbucket.org/evidentsolutions/cissa/src/default/cissa-core/src/test/java/fi/evident/cissa/CissaTest.java) for details.
 
+[![Build Status](https://drone.io/bitbucket.org/evidentsolutions/cissa/status.png)](https://drone.io/bitbucket.org/evidentsolutions/cissa/latest)
+
 Single line comments
 ====================
 
