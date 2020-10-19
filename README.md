@@ -3,9 +3,7 @@ Cissa
 
 Cissa is a simple CSS-preprocessor. Any valid CSS-file is in itself valid Cissa-markup,
 but Cissa provides some additional features on top of CSS. The features are briefly
-introduced here, but see [cissa-core/src/test/java/fi/evident/cissa/CissaTest.java](https://bitbucket.org/evidentsolutions/cissa/src/default/cissa-core/src/test/java/fi/evident/cissa/CissaTest.java) for details.
-
-[![Build Status](https://drone.io/bitbucket.org/evidentsolutions/cissa/status.png)](https://drone.io/bitbucket.org/evidentsolutions/cissa/latest)
+introduced here, but see [cissa-core/src/test/java/fi/evident/cissa/CissaTest.java](https://github.com/EvidentSolutions/cissa/blob/master/cissa-core/src/test/java/fi/evident/cissa/CissaTest.java) for details.
 
 Single line comments
 ====================
@@ -18,33 +16,35 @@ Nested selectors
 Normally you have to repeat your selectors several times when writing CSS. This
 makes it hard to see the structure of the file and to make changes.
 
-    :::css
-    .foo {
-      rules
-    }
+```scss
+.foo {
+    rules
+}
 
-    .foo .bar {
-      rules
-    }
+.foo .bar {
+    rules
+}
 
-    .foo .baz {
-      rules
-    }
+.foo .baz {
+    rules
+}
+```
 
 Cissa lets you nest rule-sets inside other rule-sets:
 
-    :::scss
-    .foo {
-      rules
+```scss
+.foo {
+  rules
 
-      .bar {
-        rules
-      }
+  .bar {
+    rules
+  }
 
-      .baz {
-        rules
-      }
-    }
+  .baz {
+    rules
+  }
+}
+```
 
 Variables
 =========
@@ -52,23 +52,24 @@ Variables
 Often you need to refer to the same thing in multiple different rules. Cissa let's you
 define variables in any scope. The variables are visible to all nested scopes.
 
-    :::scss
-    $favoriteColor: green;
+```scss
+$favoriteColor: green;
 
-    .foo {
-      background-color: $favoriteColor;
-    }
+.foo {
+  background-color: $favoriteColor;
+}
 
-    .bar {
-      $otherColor: red;
+.bar {
+  $otherColor: red;
 
-      color: $favoriteColor;
-      background: $otherColor;
+  color: $favoriteColor;
+  background: $otherColor;
 
-      .baz {
-        color: $otherColor;
-      }
-    }
+  .baz {
+    color: $otherColor;
+  }
+}
+```
 
 Expressions
 ===========
@@ -76,16 +77,17 @@ Expressions
 You can use arithmetic expressions when computing values of properties. Cissa will
 make sure that you use compatible units.
 
-    :::scss
-    $leftColumnWidth: 300px;
-    $defaultPadding: 10px;
-    $myColor: #442485;
+```scss
+$leftColumnWidth: 300px;
+$defaultPadding: 10px;
+$myColor: #442485;
 
-    .center {
-      position: absolute;
-      left: $leftColumnWidth + $defaultPadding;
-      color: $myColor + #111111;
-    }
+.center {
+  position: absolute;
+  left: $leftColumnWidth + $defaultPadding;
+  color: $myColor + #111111;
+}
+```
 
 Cissa vs. Sass
 ==============
@@ -101,21 +103,23 @@ Using Cissa with Maven
 Cissa is available on the central Maven repository, so just add the following
 dependency to your pom.xml to use the programmatic interface:
 
-    :::xml
-    <dependency>
-        <groupId>fi.evident.cissa</groupId>
-        <artifactId>cissa-core</artifactId>
-        <version>0.5.0</version>
-    </dependency>
+```xml
+<dependency>
+    <groupId>fi.evident.cissa</groupId>
+    <artifactId>cissa-core</artifactId>
+    <version>0.5.0</version>
+</dependency>
+```
 
 To use the servlet in your web application, add the following instead:
 
-    :::xml
-    <dependency>
-        <groupId>fi.evident.cissa</groupId>
-        <artifactId>cissa-servlet</artifactId>
-        <version>0.5.0</version>
-    </dependency>
+```xml
+<dependency>
+    <groupId>fi.evident.cissa</groupId>
+    <artifactId>cissa-servlet</artifactId>
+    <version>0.5.0</version>
+</dependency>
+```
 
 Attributions
 ============
